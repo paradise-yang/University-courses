@@ -1,0 +1,124 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Solve ODE}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+调用系统内置函数求解一节常微分方程组初值问题：
+\begin{displaymath}
+  \left \{
+  \begin{array}{l}
+    x'=\sin x+\cos(ty) \\
+    y'=e^{-tx}+\frac{\sin (t x)}{t} \\
+    x(-1)=2.37 \\
+    y(-1)=-3.48
+  \end{array}
+  \right.
+\end{displaymath}
+并输出如下相应结果与图像：
+
+1.在区间$[-1,4]$求解如上常微分方程组初值问题，并在$t$轴上以$0.1$的间隔打印相应的解。
+
+2.对区间$[-1,4]$在同一图像上绘制对应的函数图像$x(t),y(t)$。
+
+3.绘制如下定义的参数曲线图像：
+\begin{displaymath}
+  \{ (x(t),y(t)):t\in [-1,4] \}
+\end{displaymath}
+
+\section{Method and Results}
+由于这只是调用系统内部函数，所以针对$Mathematica$只需调用$NDSolve$函数即可，对应代码如下：
+
+solution =NDSolve[\{x'[t] == Sin[x[t]] + Cos[t y[t]],y'[t] == E\^(-t x[t]) + Sin[t y[t]]/t, x[-1] == N[237/100, 10],y[-1] == N[-348/100, 10]\}, \{x, y\}, \{t, -1, 4\}];
+
+x = x /. solution[[1, 1]];
+
+y = y /. solution[[1, 2]];
+
+其次只需对应的调用指定函数求解与绘图即可。
+
+\subsection{任务1.绘制求解的表格}
+相关代码如下：
+
+t = -1; h = 1/10; num = \{\};
+
+While[t <= 4, AppendTo[num, \{N[t, 2], N[x[t], 10], N[y[t], 10]\}];  t = t + h];
+
+PrependTo[num, \{"t", "x(t)", "y(t)"\}];
+
+GridBox[num, ColumnAlignments -> Left,
+  GridBoxDividers -> \{"Rows" -> \{\{True\}\},
+    "Columns" -> \{\{True\}\}\}] // DisplayForm
+
+从而对应输出结果为：
+\begin{figure}[H]
+    \centering
+    \subfigure%[]
+    {
+    \begin{minipage}[t]{0.50\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{result11.png}
+    \end{minipage}
+    }%
+    \subfigure%[]
+    {
+    \begin{minipage}[t]{0.50\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{result12.png}
+    \end{minipage}%
+    }%
+    \centering
+    \end{figure}
+    
+\subsection{任务2.绘制解函数图像}
+相关代码如下：
+
+img1 = Plot[x[t], \{t, -1, 4\}, PlotStyle -> Red];
+
+img2 = Plot[y[t], \{t, -1, 4\}, PlotStyle -> Yellow];
+
+Show[img1, img2, PlotRange -> All]
+
+从而输出图像结果如下：
+
+\begin{figure}[H]
+  \begin{center}
+  \caption{红色为$x(t)$，黄色为$y(t)$}
+  \includegraphics[width=0.6\textwidth]{result2.png}
+  \end{center}
+\end{figure}
+
+\subsection{任务3.绘制参数函数（轨道）图像}
+相关代码如下：
+
+ParametricPlot[\{x[t], y[t]\}, \{t, -1, 4\}, PlotRange -> Automatic]
+
+从而输出图像结果如下：
+
+\begin{figure}[H]
+  \begin{center}
+  \caption{轨道图像}
+  \includegraphics[width=0.3\textwidth,height=0.5\textheight]{result3.png}
+  \end{center}
+\end{figure}
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework13\_0520.nb)。
+
+\end{document}

@@ -1,0 +1,108 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Finite Differences}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+编写求解两点边值问题的通用子程序，允许用户提供相应的$a,\alpha,b,\beta,n$，以及相应的函数$u(t),v(t),w(t)$。并应用该通用子程序求解如下两个边值问题：
+\begin{displaymath}
+  \left
+  \{
+  \begin{array}{c}
+    x''=-x \\
+    x(0)=3,x(\frac{\pi}{2})=7
+  \end{array}
+  \right.
+\end{displaymath}
+\begin{displaymath}
+  \left
+  \{
+  \begin{array}{c}
+    x''=2e^{t}-x \\
+    x(0)=2,x(1)=e+\cos 1
+  \end{array}
+  \right.
+\end{displaymath}
+分别离散成$n=10,20,40,80,160$的情况，输出误差，并计算相应的收敛阶，计算公式如下：
+\begin{displaymath}
+  Ord=\frac{ln(Error_{old}/Error_{new})}{ln(N_{new}/N_{old})}
+\end{displaymath}
+
+\section{Method}
+对于固定的$n$，计算出相应的$h=(b-a)/(n+1)$，从而相应的离散点为$t_{i}=a+ih,i=0,1,...,n+1$，进而记$u_{i}=u(t_{i}),v_{i}=v(t_{i}),w_{i}=w(t_{i})$，
+并引进缩写：
+\begin{displaymath}
+  \begin{array}{l}
+    a_{i}=-1-\frac{1}{2} h w_{i+1} \\
+    d_{i}=2+h^{2} v_{i} \\
+    c_{i}=-1+\frac{1}{2} h w_{i} \\
+    b_{i}=-h^{2} u_{i}
+  \end{array}
+\end{displaymath}
+进而我们依据相应的位置，构造出对应的矩阵与右侧方程的值，即可求解。
+
+具体$Mathematica$代码如下：
+
+h = (b - a)/(n + 1);
+
+matrix = Table[0, \{i, 1, n\}, \{j, 1, n\}];
+
+right = Table[0, \{i, 1, n\}];
+
+right[[1]] = -h\^2 (u /. t $->$ (a + h)) -
+  alpha (-1 - 1/2 h w /. t $->$ (a + h));
+
+matrix[[1, 1]] = 2 + h\^2 v /. t $->$ (a + h);
+
+matrix[[1, 2]] = -1 + 1/2 h w /. t $->$ (a + h);
+
+For[i = 2, i <= n - 1, i++,
+
+\qquad matrix[[i, i - 1]] = -1 - 1/2 h w /. t $->$ (a + i h);
+
+\qquad matrix[[i, i]] = 2 + h\^2 v /. t $->$ (a + i h);
+
+\qquad matrix[[i, i + 1]] = -1 + 1/2 h w /. t $->$ (a + i h);
+
+\qquad right[[i]] = -h\^2 u /. t $->$ (a + i h); ];
+
+matrix[[n, n - 1]] = -1 - 1/2 h w /. t $->$ (a + n h);
+
+matrix[[n, n]] = 2 + h\^2 v /. t $->$ (a + n h);
+
+right[[n]] = -h\^2 (u /. t $->$ (a + n h)) -
+  beta (-1 + 1/2 h w /. t $->$ (a + n h));
+
+N[Inverse[matrix].right, 20]
+
+\section{Results}
+通过输入相关参数信息，有如下输出结果：
+\begin{figure}[H]
+  \begin{center}
+  \includegraphics[width=1.0\textwidth]{result.png}
+  \end{center}
+\end{figure}
+
+\section{Discussion}
+通过对数据的观察我们发现：随着离散点数量的增大，即$n$的增大，误差值逐渐减小，而计算出对应的误差阶趋近于$2$，这较好的符合理论结果。
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework15\_0601.nb)。
+
+\end{document}

@@ -1,0 +1,66 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Iterative Method to Find Roots}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+编写牛顿迭代法与弦截法求根的通用程序，并对函数$f(x)=-x + \frac{1}{3} x^3$分别采用牛顿迭代法与弦截法，在初值为$x_{0}=0.1,0.2,0.9,9.0$处迭代计算相应的迭代解。
+
+\section{Method}
+
+这一次实验方法比较直白，只需按照对应的迭代方式构造出函数即可。
+
+首先对于牛顿迭代法，迭代函数为
+\begin{displaymath}
+  \phi(x)=x-\frac{f(x)}{f'(x)}
+\end{displaymath}
+迭代点列的格式为
+\begin{displaymath}
+  x_{n+1}=\phi(x_{n})
+\end{displaymath}
+从而只需依照该迭代格式直接生成相关的点列即可，但注意，为了精度需求，内部采用符号计算结果，最后进行数值化简，并且设置迭代跳出的误差为$10^{-15}$，记录迭代次数与最终迭代数值解，生成输出列表即可
+
+对于弦截法，其迭代格式为
+\begin{displaymath}
+  x_{n+1}=x_{n}-f(x_{n})\frac{x_{n}-x_{n-1}}{f(x_{n})-f(x_{n-1})}
+\end{displaymath}
+从而依据此迭代格式直接迭代即可。由于弦截法并未给出$x_{1}$，我们这里取牛顿迭代法算出的$x_{1}$即可，另外仍设置迭代跳出的误差为$10^{-15}$，并记录迭代次数与最终迭代数值解，并生成输出列表。
+
+\section{Results}
+输出结果如下：
+\begin{figure}[H]
+  \begin{center}
+  \caption{牛顿迭代法}
+    \includegraphics[width=1.0\textwidth]{newton.png}
+
+  \caption{弦截法}
+    \includegraphics[width=1.0\textwidth]{chord.png}
+  \end{center}
+\end{figure}
+
+
+\section{Discussion}
+通过对数据的结果观察我们可以发现：
+对于牛顿迭代法，初值为$x_{0}=0.1,0.2,0.9,9.0$时，迭代解分别收敛于原函数的精确根$0,0,-\sqrt{3},\sqrt{3}$；而对于弦截法，迭代解则分别收敛于原函数的精确根$0,0,\sqrt{3},\sqrt{3}$；收敛次数上面，在保证相同误差下，弦截法要慢于牛顿迭代法几次；并且可以看到初值$x_{0}=0.9$时，二者收敛的根完全不一样，分别为$-\sqrt{3},\sqrt{3}$，可见用弦的斜率代替导数值还是有很大区别的，这可能直接影响到所收敛到的根值。
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework5\_0413.nb)。
+
+\end{document}

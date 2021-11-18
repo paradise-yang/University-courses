@@ -1,0 +1,89 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Plot}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+绘制五阶$Adams-Bashforth$公式与五阶$Adams-Moulton$公式的绝对稳定性区域。
+
+\section{Method and Results}
+\subsection{五阶$Adams-Bashforth$公式}
+五阶$Adams-Bashforth$公式为：
+\begin{displaymath}
+  y_{n+1} = y_{n} + \frac{h}{720}(1901 f_{n}- 2774 f_{n-1}+ 2616 f_{n-2}- 1274 f_{n-3}+ 251 f_{n-4})
+\end{displaymath}
+从而令$u=\lambda h$，即有：
+\begin{displaymath}
+  y_{n+1} = y_{n} + \frac{u}{720}(1901 y_{n}- 2774 y_{n-1}+ 2616 y_{n-2}- 1274 y_{n-3}+ 251 y_{n-4})
+\end{displaymath}
+进而我们利用$Mathematica$绘制相应区域即可。代码如下：
+
+w[a\_, b\_] := a*I + b;
+
+f[z\_, a\_, b\_] :=  z\^5 - z\^4 -
+   w[a, b]/720 (1901 z\^4 - 2774 z\^3 + 2616 z\^2 - 1274 z + 251);
+
+t[a\_, b\_] := NSolve[f[z, a, b] == 0, z];
+
+RegionPlot[
+ Norm[t[a, b][[1, 1, 2]]] $<=$ 1 \&\& Norm[t[a, b][[2, 1, 2]]] $<=$ 1 \& \&
+  Norm[t[a, b][[3, 1, 2]]] $<=$ 1 \&\& Norm[t[a, b][[4, 1, 2]]] $<=$ 1 \& \&
+  Norm[t[a, b][[5, 1, 2]]] $<=$ 1, \{a, -0.5, 0.5\}, \{b, -0.5, 0.5\}]
+
+故有如下绝对稳定性区域图：
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{bashforth.png}
+    \end{figure}
+
+\subsection{五阶$Adams-Bashforth$公式}
+五阶$Adams-Bashforth$公式为：
+\begin{displaymath}
+  y_{n+1} = y_{n} + \frac{h}{720}(251 f(x_{n+1},y_{n+1}^{*})+646 f_{n}- 264 f_{n-1}+ 106 f_{n-2}- 19 f_{n-3})
+\end{displaymath}
+从而令$u=\lambda h$，即有：
+\begin{displaymath}
+  y_{n+1} = y_{n} + \frac{u}{720}(251 y_{n+1}+646 y_{n}- 264 y_{n-1}+ 106 y_{n-2}- 19 y_{n-3})
+\end{displaymath}
+进而我们利用$Mathematica$绘制相应区域即可。代码如下：
+
+w[a\_, b\_] := a*I + b;
+
+f[z\_, a\_,
+   b\_] := (1 - 251*w[a, b]/720)*z\^4 + (-1 - 646*w[a, b]/720)*
+    z\^3 + (264*w[a, b]/720)*z\^2 + (-106*w[a, b]/720)*
+    z + (19*w[a, b]/720);
+t[a\_, b\_] := Solve[f[z, a, b] == 0, z];
+
+t[a\_, b\_] := NSolve[f[z, a, b] == 0, z];
+
+RegionPlot[
+ Norm[t[a, b][[1, 1, 2]]] $<=$ 1 \&\& Norm[t[a, b][[2, 1, 2]]] $<=$ 1 \&\&
+  Norm[t[a, b][[3, 1, 2]]] $<=$ 1 \&\& Norm[t[a, b][[4, 1, 2]]] $<=$ 1 , \{a, -2, 2\}, \{b, -2, 2\}]
+  
+故有如下绝对稳定性区域图：
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{moulton.png}
+    \end{figure}
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework14\_0527.nb)。
+
+\end{document}

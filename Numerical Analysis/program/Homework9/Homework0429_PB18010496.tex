@@ -1,0 +1,93 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Romberg Numerical integration}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+编写计算定义在任意区间$[a,b]$上的函数$f$的$Romberg$算法，可指定计算到$Romberg$阵列的任意行数，并且输出整个阵列与计算误差，并用如上程序计算积分值验证算法正确性。
+\begin{displaymath}
+  I_{1}(f)=\int_{0}^{1} \frac{\sin x}{x} dx
+  \qquad
+  I_{2}(f)=\int_{-1}^{1} \frac{\cos x-e^{x}}{\sin x} dx
+  \qquad
+  I_{3}(f)=\int_{1}^{\infty} \frac{1}{x e^{x}} dx
+\end{displaymath}
+其中相关函数值时，用$f(x_{0})=\lim_{x \rightarrow x_{0}} f(x)$代替一些无法直接定义的函数值。而对于第三个积分计算，采取变量替换$x=\frac{1}{t}$即可。
+
+计算到$Romberg$阵列中的第七行，输出误差。
+
+\section{Method}
+
+$Romberg$算法计算公式如下：
+\begin{displaymath}
+  \left \{
+  \begin{array}{ll}
+    R(0,0)=\frac{1}{2}(b-a)[f(a)+f(b)] & \textrm{\quad} \\
+    R(n,0)=\frac{1}{2}R(n-1,0)+h_{n}\sum_{i=1}^{2^{n-1}}f(a+(2i-1)h_{n}) & \textrm{$n\geq 1$} \\
+    R(n,m)=R(n,m-1)+\frac{1}{4^{m}-1}[R(n,m-1)-R(n-1,m-1)] & \textrm{$n\geq 1,m\geq 1$}
+  \end{array}
+  \right.
+\end{displaymath}
+其中
+\begin{displaymath}
+  h_{0}=b-a \qquad h_{n}=\frac{h_{n-1}}{2} \quad (n\geq 1)
+\end{displaymath}
+
+故只需根据算法直接编写计算过程即可，$Romberg$算法如下：
+
+$\mathbf{romberg}$ (f,a,b,M)
+
+$h=(b-a)$
+
+$R(0,0)=\frac{1}{2}(b-a)[f(a)+f(b)]$
+
+$\mathbf{for}$ $n=1$ $\mathbf{to}$ M
+
+\qquad $h=h/2$
+
+\qquad $R(n,0)=\frac{1}{2}R(n-1,0)+h\sum_{i=1}^{2^{n-1}}f(a+(2i-1)h)$
+
+\qquad $\mathbf{for}$ $m=1$ $\mathbf{to}$ $n$
+
+\qquad \qquad $R(n,m)=R(n,m-1)+\frac{1}{4^{m}-1}[R(n,m-1)-R(n-1,m-1)]$
+
+\section{Results}
+输出结果如下：
+\begin{figure}[H]
+  \begin{center}
+  \caption{$I_{1}(f)=\int_{0}^{1} \frac{\sin x}{x}$的$Romberg$阵列与误差}
+  \includegraphics[width=1.0\textwidth]{i1.png}
+  \caption{$I_{2}(f)=\int_{-1}^{1} \frac{\cos x-e^{x}}{\sin x}$的$Romberg$阵列与误差}
+  \includegraphics[width=1.0\textwidth]{i2.png}
+  \caption{$I_{3}(f)=\int_{1}^{\infty} \frac{1}{x e^{x}}$的$Romberg$阵列与误差}
+  \includegraphics[width=1.0\textwidth]{i3.png}
+  \end{center}
+\end{figure}
+
+
+\section{Discussion}
+
+通过对数据的观察我们发现：
+
+$Romberg$算法较好的给出积分的数值计算值，误差除了第二个积分计算有$0.585$较大，其他均十分小，结果良好。
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework9\_0429.nb)。
+
+\end{document}

@@ -1,0 +1,81 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-ODE Numerical solution}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+编写四阶泰勒级数求解常微分方程方法，并对如下方程组，取$h=0.01$在区间为$[0,2]$上求解
+\begin{displaymath}
+  \left \{
+  \begin{array}{l}
+    x'=1+x^{2}-t^{3} \\
+    x(0)=-1
+  \end{array}
+  \right.
+\end{displaymath}
+
+\section{Method}
+首先求解$x$关于$t$的各阶导数：
+\begin{displaymath}
+  \begin{array}{c}
+    x''=1 + x^{2} - t^{3} \\
+    x'''=2 x x' - 3 t^{2} \\
+    x^{(4)}=6 x' x'' + 2 x x''' - 6
+  \end{array}
+\end{displaymath}
+其次由如下代码直接求解即可：
+
+For[k = 1; h = 0.01;M = 2/h; t = 0; x = -1; num = \{\};, k $<=$ M, k++,
+
+x1 = 1 + x\^ 2 - t\^ 3;
+
+x2 = 2 x x1 - 3 t\^ 2;
+
+x3 = 2 x1\^ 2 + 2 x x2 - 6 t;
+
+x4 = 6 x1 x2 + 2 x x3 - 6;
+
+x = x + h (x1 + h/2 (x2 + h/3 (x3 + h/4 x4)));
+
+t = t + h;
+
+AppendTo[num, \{t, x\}];];
+
+\section{Results}
+输出结果如下：
+
+注：具体相关点的数值数据参见相关$Homework\_0513$。
+\begin{figure}[H]
+  \begin{center}
+  \caption{$h=0.01$}
+  \includegraphics[width=1.0\textwidth]{result.png}
+  \caption{$h=0.001$}
+  \includegraphics[width=1.0\textwidth]{result1.png}
+  \end{center}
+\end{figure}
+
+
+\section{Discussion}
+
+通过对数据的观察我们发现：随着对区间的逐渐加细(从$h=0.01$到$h=0.001$)，所计算的数值解逐渐稳定收敛。
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework10\_0513.nb)。
+
+\end{document}

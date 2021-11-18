@@ -1,0 +1,136 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-$RKF45$ and $RKF54$}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+应用$RKF45$与$RKF54$方法，设计实现自适应方法，求解如下常微分方程初值问题
+\begin{displaymath}
+  \left \{
+  \begin{array}{l}
+    y'=e^{xy}+\cos (y-x) \\
+    y(1)=3
+  \end{array}
+  \right.
+\end{displaymath}
+取初值步长$h=0.01$，在自适应方法中步长的选取采用如下策略：
+\begin{displaymath}
+  h=0.9 h (\frac{\delta}{|e|})^{\frac{1}{1+p}}
+\end{displaymath}
+并且计算在解溢出时终止，程序输出解的范围$[1,?]$，并提示出入一个介入该范围的值，应用简单的线性插值计算出相应的函数值。
+\section{Method}
+由于$RKF45$与$RKF54$本质上就是迭代求解，所以只需根据如下公式直接编写即可
+\begin{figure}[H]
+    \centering
+    \subfigure[对应公式]
+    {
+    \begin{minipage}[t]{0.50\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth,height=0.21\textheight]{ppt1.png}
+    \end{minipage}
+    }%
+    \subfigure[迭代形式]
+    {
+    \begin{minipage}[t]{0.50\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth,height=0.21\textheight]{ppt2.png}
+    \end{minipage}%
+    }%
+    \centering
+    \end{figure}
+从而我们直接编写相关代码即可
+
+delta = 10\^(-7);(*此处修改delta值*)
+
+p = 4;x = 1; y = 3; h = 0.01;numsolution = \{\{1, 3\}\};
+
+While[True,
+ 
+ F1 = N[h*f[x, y], 30];
+ 
+ F2 = h*f[x + h/4, y + F1/4];
+ 
+ F3 = h*f[x + 3/8*h, y + 3/32*F1 + 9/32*F2];
+ 
+ F4 = h*f[x + 12/13*h, y + 1932/2197*F1 - 7200/2197*F2 + 7296/2197*F3];
+ 
+ F5 = h*f[x + h, y + 439/216*F1 - 8*F2 + 3680/513*F3 - 845/4104*F4];
+ 
+ F6 = h*f[x + 1/2*h, y - 8/27*F1 + 2*F2 - 3544/2565*F3 + 1859/4104*F4 - 11/40*F5];
+ 
+ y5 = y + 16/135*F1 + 6656/12825*F3 + 28561/56430*F4 - 9/50*F5 + 2/55*F6;
+ 
+ y4 = y + 25/216*F1 + 1408/2565*F3 + 2197/4104*F4 - F5/5;
+ 
+ x = h + x;
+ 
+ y = y5;
+ 
+ AppendTo[numsolution, \{N[x, 10], y\}];
+ 
+ e = Abs[y5 - y4];
+ 
+ h = 9/10 h (delta/e)\^(1/(1 + p));
+ 
+ If[h $<$ 10\^(-7), Break[]];]
+
+numsolution = Sort[numsolution]
+
+n = Length[numsolution];(*求出长度*)
+
+max = numsolution[[n, 1]];(*输出区间右端点*)
+
+Print["解的范围区间为[", 1, ",", max, "]"]
+
+而对于求解区间范围内的函数值，只需运用两点确定直线的公式直接带入求得即可。
+
+\section{Results}
+输出结果如下：
+\begin{figure}[H]
+  \begin{center}
+  \includegraphics[width=0.6\textwidth]{result1.png}
+  \end{center}
+\end{figure}
+
+我们选取几个点求解对应处的函数值，具体代码如下：
+
+require = \{1.02153, 1.04001, 1.04558\};(*在下面输入所求的点，我们以如下三个点为代表*)
+
+value = \{\};
+
+For[i = 1, i <= Length[require], i++,
+ 
+ For[j = 1, j <= n, j++,If[numsolution[[j, 1]] >= require[[i]], Break[]]];
+ 
+ AppendTo[value, (numsolution[[j, 2]] -numsolution[[j - 1, 2]])/(numsolution[[j, 1]] -  numsolution[[j - 1, 1]])*(require[[i]] - numsolution[[j, 1]]) +numsolution[[j, 2]]];
+    
+    Print[require[[i]], "处的函数值为：", value[[i]]]]
+
+相关计算值为：
+\begin{figure}[H]
+  \begin{center}
+  \includegraphics[width=0.6\textwidth]{result2.png}
+  \end{center}
+\end{figure}
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework11\_0518.nb)。
+
+\end{document}

@@ -1,0 +1,62 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Lagrange Interpolation Polynomials}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+通过对函数
+\begin{displaymath}
+f(x)=\frac{1}{1+x^2}\qquad
+x\in[-5,5]
+\end{displaymath}
+在不同插值点处构造Lagrange插值多项式，并将插值多项式与原函数在$[-5,5]$的一百等分点处的差值的绝对值最大值作为误差，进而观察插值多项式与原函数相近程度。
+
+\section{Method}
+
+通过Mathematica编程，先构造插值点与区间一百等分点的列表，再构造插值点处原函数取值列表，然后根据Lagrange基函数构造代码构造多项式，最后计算二者在一百等分点处的差值的绝对值，为便于操作，将过程Module化。
+
+\section{Results}
+输出结果见下页：
+\begin{figure}[htb]
+\begin{center}
+\includegraphics{Homework0311.png}
+\end{center}
+\end{figure}
+
+
+\section{Discussion}
+
+通过对数据的观察我们发现：
+
+当取第一类插值点
+\begin{displaymath}
+x_{i}=5-\frac{10}{N}i,\qquad i=0,1,...,N
+\end{displaymath}
+随着插值点个数$N$的增大，误差逐渐增大，最后甚至达到78689.03748516。
+
+相反，当取第二类插值点
+\begin{displaymath}
+x_{i}=-5\cos(\frac{2i+1}{2N+2}\pi),\qquad i=0,1,...,N
+\end{displaymath}
+随着插值点个数$N$的增大，误差逐渐减小，最后甚至达到0.00027385978993257。
+
+\section{Computer Code}
+
+代码部分请参见附件。
+
+\end{document} 

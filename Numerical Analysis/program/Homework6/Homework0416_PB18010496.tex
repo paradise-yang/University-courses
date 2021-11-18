@@ -1,0 +1,70 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Richardson Extrapolate }
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+编程实现用Richardson外推法计算一阶导数$f'(x)$的值，其中默认$h=1$。分别对如下函数与对应的$x$值以及外推步数进行计算并输出。
+\begin{table}[H]
+  \centering
+  \begin{tabular}{ccc}
+  $lnx$ & $x=3$ & $M=3$ \\
+  $\tan x$ & $x=arcsin0.8$ & $M=4$ \\
+  $\sin(x^{2}+\frac{1}{3}x)$ & $x=0$ & $M=5$\\
+  \end{tabular}
+\end{table}
+
+\section{Method}
+这个实验并不需要设计算法，只需依照Richardson外推公式计算即可：
+
+首先计算$D(n,0),n=0,1,...,M$，计算公式如下：
+\begin{displaymath}
+  D(n,0)=\phi(\frac{h}{2^{n}}),\quad \phi(h)=\frac{1}{2h}[f(x+h)-f(x-h)], \qquad n=0,1,...,M
+\end{displaymath}
+
+其次执行下列计算公式即可：
+\begin{displaymath}
+  D(n,k)=\frac{4^{k}}{4^{k}-1}D(n,k-1)-\frac{1}{4^{k}-1}D(n-1,k-1),\quad k=1,...,M,n=k,...,M
+\end{displaymath}
+
+最后输出对应三角列即可。
+
+\section{Results}
+输出结果如下：
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=1.0\textwidth]{f1.png}
+      \end{center}
+\end{figure}
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=1.0\textwidth]{f2.png}
+    
+    \includegraphics[width=1.0\textwidth]{f3.png}
+  \end{center}
+\end{figure}
+
+\section{Discussion}
+通过对以上三角列输出结果可以看到，其结果都较好的符合真实的导数值。
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework6\_0415.nb)。
+
+\end{document}

@@ -1,0 +1,92 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Truncation Error}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+通过对Hamming级数
+\begin{displaymath}
+\varphi(x)=
+\sum_{k=1}^ \infty \frac{1}{k(k+x)}
+\end{displaymath}
+在$x$不同取值位置的有限项计算，估计级数的精确值，并给出在截断误差
+$< {10}^{-6}$时，所需有限项k的上界。
+
+\section{Method}
+
+通过Mathematica编程，从1项逐渐累加直到截断误差符合要求，记录相应的$k$值，并输出相应列表。
+
+另一方面，从分析学角度可以看到，为求$N$使得
+\begin{displaymath}
+\sum_{k=N+1}^ \infty \frac{1}{k(k+x)}<{10}^{-6}
+\end{displaymath}
+而对$\forall x \neq 0$有
+\begin{displaymath}
+\sum_{k=N+1}^ \infty \frac{1}{k(k+x)}
+<
+\int_{N}^{\infty} \frac{1}{k(k+x)} dk
+=
+\frac{1}{x} \ln(\frac{N+x}{N})
+\end{displaymath}
+故只需
+\begin{displaymath}
+\frac{1}{x} \ln(\frac{N+x}{N})<{10}^{-6}
+\end{displaymath}
+解得
+\begin{displaymath}
+N > \frac{x}{e^{{10}^{-6}x}-1}
+\end{displaymath}
+从而只需取
+\begin{displaymath}
+N = \lfloor \frac{x}{e^{{10}^{-6}x}-1} \rfloor +1
+\end{displaymath}
+即可。
+
+同理，对$x=0$时,只需取
+\begin{displaymath}
+N > e^{{10}^{6}}
+\end{displaymath}
+即可
+
+\section{Results}
+输出结果见下页：
+\begin{figure}[htbp]
+\begin{minipage}{7cm}
+
+\includegraphics{Homework0309_2.png}
+\caption{分析估计}
+\end{minipage}
+\hfill
+\begin{minipage}{7cm}
+\includegraphics{Homework0309.png}
+\caption{实际累加}
+\end{minipage}
+\end{figure}
+
+
+\section{Discussion}
+
+通过对数据的观察我们发现，在$0 \leq x < 1 $时，$k$取值均为1000000，其他$x$下$k$的取值也都十分接近1000000，并且随着$x$的增大，$k$以5的步长递减。
+
+对比分析估计所得与实际计算累加所得，可以看出分析估计十分接近实际累加精确的$k$上界，故分级估计良好。
+
+\section{Computer Code}
+
+代码部分请参见附件。
+
+\end{document}

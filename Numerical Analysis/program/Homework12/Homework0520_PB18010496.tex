@@ -1,0 +1,125 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Adams Bashforth}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+利用$Adams-Bashforth$公式计算如下常微分方程在$t=1$处的数值解，其中部分起始初值利用$Runge-Kutta$格式得到初值：
+\begin{displaymath}
+  \left \{
+  \begin{array}{l}
+    x'=\frac{t-e^{-t}}{x+e^{x}} \\
+    x(0)=0
+  \end{array}
+  \right.
+\end{displaymath}
+其中取节点为$x_{i},i=0,1,...,N$，而$N=2^{k},k=3,4,5,6,7,8$。
+
+注意到该方程的真解由等式
+\begin{displaymath}
+  x^{2}-t^{2}+2 e^{x}-2e^{-t}=0
+\end{displaymath}
+隐式的给出。从而可以利用牛顿迭代法求出当$t=1$时该方程的数值零点，并将该点作为参考的准确解计算相关误差。
+
+进一步利用如下误差计算公式计算相应的收敛阶：
+\begin{displaymath}
+  order=\frac{ln(Error_{old}/Error_{new})}{ln(N_{new}/N_{old})}
+\end{displaymath}
+
+\section{Method and Results}
+\subsection{数值求解待参考的准确解}
+对于求解$x(1)$处的值，首先我们可以直观的主义到，对于$t=1$时，当$x=-1$时，上述隐式方程$x^{2}-t^{2}+2 e^{x}-2e^{-t}=0$即成立，从而$x=1$为一个解。
+
+再者我们直接调用第五次程序作业的$Mathematica$代码数值求解对应数值解，代码如下所示：
+
+\textbf{newton[f\_, x0\_]} := Module[\{hx, t, i, table, n\},
+   
+   hx = x - f/D[f, x];
+   
+   t = \{N[hx /. x -> x0, 20]\};
+   
+   For[i = 1; AppendTo[t, N[hx /. x -$>$ t[[1]], 20]],
+    Abs[N[t[[i + 1]] - t[[i]], 20]] $>$ 10\^(-7), i++,
+    AppendTo[t, N[hx /. x -$>$ t[[i + 1]], 20]]];
+   
+   n = Length[t];
+   
+   t[[n]]];
+
+f1 = x\^2 - 1 + 2 E\^x - 2/E;
+
+newton[f1, 0]
+
+从而得到如下输出计算结果：
+\begin{figure}[H]
+  \begin{center}
+  \includegraphics[width=0.3\textwidth]{result1.png}
+  \end{center}
+\end{figure}
+
+可以看到，这不是如上$x=-1$的解，下面我们将分别对如上两种解分别计算误差与收敛阶。
+
+\subsection{$Adams-Bashforth$方法求解}
+首先我们利用$Runge-Kutta$求解前面的四项初值。由于我们采用的是5阶$Adams-Bashforth$计算公式，所以为了精度匹配与协调，对应的$Runge-Kutta$也采用5阶计算公式，对应计算公式如下：
+\begin{displaymath}
+  %\left \{
+  \begin{array}{l}
+    F1 = h f[x, y] \\
+F2 = h f[x + h/4, y + F1/4] \\
+F3 = h f[x + 3/8*h, y + 3/32*F1 + 9/32*F2] \\
+F4 = h f[x + 12/13*h, y + 1932/2197*F1 - 7200/2197*F2 + 7296/2197*F3] \\
+F5 = h f[x + h, y + 439/216*F1 - 8*F2 + 3680/513*F3 - 845/4104*F4] \\
+F6 = h f[x + 1/2*h,y - 8/27*F1 + 2*F2 - 3544/2565*F3 + 1859/4104*F4 - 11/40*F5] \\
+y(x+h) = y + 16/135*F1 + 6656/12825*F3 + 28561/56430*F4 - 9/50*F5 +
+  2/55*F6  
+  \end{array}
+  %\right.
+\end{displaymath}
+
+从而依据相应的公式我们得到对应的前四项后，直接利用5阶的$Adams-Bashforth$计算后续的值即可，公式如下：
+\begin{displaymath}
+  y_{n+1} = y_{n} + \frac{h}{720}(1901 f_{n}- 2774 f_{n-1}+ 2616 f_{n-2}- 1274 f_{n-3}+ 251 f_{n-4})
+\end{displaymath}
+
+进而依据上述的公式以及误差阶计算公式即可计算对应的误差与误差阶，从而有如下对应计算结果：
+\begin{figure}[H]
+    \centering
+    \subfigure[当解为$x=-1$时对应误差与阶]
+    {
+    \begin{minipage}[t]{0.50\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{result21.png}
+    \end{minipage}
+    }%
+    \subfigure[当解为$x=-0.1557824245$时对应误差与阶]
+    {
+    \begin{minipage}[t]{0.50\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth,height=0.18\textheight]{result22.png}
+    \end{minipage}%
+    }%
+    \centering
+\end{figure}
+
+通过对如上计算结果的观察，对于$x=-1$时，由于精度较高的原因，当$N$较大时，误差已经十分小了，甚至为0，所以误差阶的计算即无法计算了；而对于$x=-0.1557824245$，误差均一致为$0.844218$。所以可以知道真实解应该为$x=-1$。
+
+\section{Computer Code}
+
+代码部分请参见附件!(adamsbashforth)。
+
+\end{document}

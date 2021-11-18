@@ -1,0 +1,92 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Homework-Spline Function}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+分别对指数函数
+\begin{displaymath}
+f(x)=e^{x},\qquad x\in[0,1]
+\end{displaymath}
+在$N(=10,20,30,40)$的等距节点处构造三次自然样条、固定边界$(S'(0)=1,S'(1)=e)$的三次样条插值函数，并计算在每个区间中点$x_{i-\frac{1}{2}}$的差值，并取模最大值为误差值即
+\begin{displaymath}
+  \mathop{\max}_{i} \{ | f(x_{i-\frac{1}{2}}-S(x_{i-\frac{1}{2}}) | \}
+\end{displaymath}
+并对$N=10,20,40,80$比较上述两组节点的结果，并利用公式
+\begin{displaymath}
+  Ord=\frac{ln(Error_{old}/Error_{new})}{ln(N_{new}/N_{old})}
+\end{displaymath}
+计算算法的收敛阶。
+
+除此之外，并利用
+\begin{displaymath}
+  \int_{x_{i}}^{x_{i+1}} S_{i}(x) dx
+  =
+  \frac{h_{i}}{2} (y_{i}+y_{i+1}) - \frac{h_{i}^{3}}{24} (M_{i}+M_{i+1})
+\end{displaymath}
+计算积分
+\begin{displaymath}
+  \int_{0}^{1} S(x)dx
+\end{displaymath}
+的值，并给出与$\int_{0}^{1} f(x)dx$精确积分的误差。
+
+\section{Method}
+
+通过Mathematica编程，首先构造相应结点$(t)$、函数值$(y)$、检验差值点$(s)$以及相关的一系列的辅助列表$(h,b)$，再根据Gauss消去法直接构造好相应所需的点列$(u,v)$，最后利用解上三角的回代法解出相应的二阶函数值$(z)$，并根据
+\begin{displaymath}
+  S_{i}(x)=y_{i}+C_{i}(x-x_{i})+B_{i}(x-x_{i})^{2}+A_{i}(x-x_{i})^3
+\end{displaymath}
+其中
+\begin{displaymath}
+  \qquad A_{i}=\frac{1}{6h_{i}} (z_{i+1}-z_{i}) \qquad\qquad\qquad\qquad\qquad
+\end{displaymath}
+\begin{displaymath}
+  B_{i}=\frac{z_{i}}{2}  \qquad\qquad\qquad\qquad\qquad\qquad\quad
+\end{displaymath}
+\begin{displaymath}
+  C_{i}=-\frac{h_{i}}{6} z_{i+1} - \frac{h_{i}}{3} z_{i} + \frac{1}{h_{i}} (y_{i+1}-y_{i})
+\end{displaymath}
+构造出相应的$S_{i}(x)$函数，以此即可计算出相应检验差值点的函数值，并可以计算相应差值。另一方面再根据Introduction中的公式计算出相应积分值，并可给出相应的误差。将上面功能写为相应的Module块，便于操作运算，最后输出相应列表。
+
+\section{Results}
+输出结果如下：
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=1.0\textwidth]{order.png}
+    \caption{插值函数误差以及收敛阶}
+
+    \includegraphics[width=1.0\textwidth]{integrate.png}
+  \caption{$\int_{0}^{1} S(x)dx$积分值以及相应误差}\label{123}
+  \end{center}
+\end{figure}
+
+
+\section{Discussion}
+
+通过对数据的观察我们发现：
+
+对于三次自然样条，随着$N$的增大也即等距节点加密，样条函数与$f(x)=e^{x}$的误差逐渐减小，并通过对$order1$的观察我们发现，其阶数基本上都约等于2(1.9985-1.9999)，故 可以看出三次样条函数以平方量级收敛于相应函数，符合相关理论证明给出的结论。其次，关于积分$\int_{0}^{1} S(x)dx$，对表格的观察不难发现，随着$N$其也收敛于精确积分值$\int_{0}^{1} f(x)dx$，即误差逐渐递减。
+
+而对于固定边界$(S'(0)=1,S'(1)=e)$的样条函数，当$n=10$时，误差就已经达到了$6.956\times 10^ {-7}$如此小的程度，而且随着$N$的增大，其误差值也显著降低，甚至误差值远小于同组的三次自然样条函数误差值，而对于 其收敛阶，明显为4(3.98688-3.99699)，也即成4次方量级收敛。另一方面，关于积分$\int_{0}^{1} S(x)dx$，通过对表格的观察可以看到，随着$N$其也十分快速的收敛于精确积分值$\int_{0}^{1} f(x)dx$，即误差逐渐递减，甚至误差值远小于同组的自然样条误差值。
+
+\section{Computer Code}
+
+代码部分请参见附件!(Homework4\_0323.nb)。
+
+\end{document}
