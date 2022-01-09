@@ -1,0 +1,453 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Experiment——Chebyshev Interpolation}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+基于离散傅里叶变换，实现$Chebyshev$插值多项式的构造（即插值多项式关于$Chebyshev$多项式展开），并验证$Chebyshev$插值多项式的逼近效果。
+
+\textbf{任务一：}分别选择$20,40,60,80$个切比雪夫插值节点在$x\in [-1,1]$上插值下列函数，并绘制原函数与插值函数的图像。
+\begin{displaymath}
+  f_{1}(x)=|\sin 6x|^{3}-\cos 5e^{x}
+\end{displaymath}
+\begin{displaymath}
+  f_{2}(x)=\frac{1}{1+25x^{2}}-\sin 20x
+\end{displaymath}
+其中切比雪夫插值节点为
+\begin{displaymath}
+  x_{i}=-5 \cos (\frac{2i+1}{2n+2} \pi),\quad i=0,1,...,n
+\end{displaymath}
+
+\textbf{任务二：}选取合适的节点数，证明关于$Chebyshev$插值多项式的逼近效果，即如下两个定理，如果定理不适用，则请说明理由。
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth,height=0.225\textheight]{thm2.png}
+  \includegraphics[width=0.8\textwidth,height=0.225\textheight]{thm3.png}
+\end{figure}
+
+\section{Results}
+\subsection{插值函数图像}
+首先，我们依据离散傅里叶变换的计算公式定义，直接写出相应的计算离散傅里叶变换的$DFT$算法，传入长度为$n$的序列$y$，输出离散傅里叶变换后的序列$fourier$：
+
+    \textbf{DFT[y\_]} := Module[\{n, fourier, k, w, min\},
+
+    \qquad n = Length[y];
+
+    \qquad w = E\^(-2 Pi I/n);
+
+    \qquad fourier = Table[0, {i, 1, n}];
+
+    \qquad For[k = 1, k $<=$ n, k++, fourier[[k]] = Sum[y[[j]]*w\^((j - 1) (k - 1)), \{j, 1, n\}]];
+
+    \qquad fourier];
+
+其次我们开始写构造节点数为$n$的切比雪夫插值多项式。第一步生成插值节点$y$以及节点处函数值序列$z$，第二步将节点补$0$拓展为$2$的幂次的节点数的序列，第三步利用函数$DFT$直接生成系数序列$r$（注意由于数值计算的原因，故序列$r$内元素为复数，但其虚部量级都在$10^{-15}$次左右，可以忽略），最后直接构造出插值多项式$px$即可，算法代码如下：
+
+    \textbf{Chebyshev[f\_, n\_]} := Module[\{j, y, z, r, px\},
+
+    \qquad y = Table[N[Cos[k Pi/n], 50], \{k, 0, n\}];(*生成插值节点*)
+
+    \qquad Do[AppendTo[y, y[[n - i + 2]]], \{i, 2, n\}];(*拓展节点*)
+
+    \qquad z = f /. x -$>$ y;(*生成插值节点处函数值*)
+
+    \qquad r = Re[FFT[z]];(*傅里叶变换*)
+
+    \qquad px = r[[1]]/(2 n);(*生成Chebyshev插值多项式*)
+
+    \qquad For[j = 2, j $<=$ n, j++, px += r[[j]]/n *ChebyshevT[j - 1, x]];
+
+    \qquad px += r[[n + 1]]/(2 n) *ChebyshevT[n, x];
+
+    \qquad px];
+
+基于以上两个函数，我们便可以生成插值函数以及绘制出相应的图像了，相关代码如下：
+
+    \qquad n = \{20, 40, 60, 80\};
+
+    \qquad img1 = \{Plot[f1x, \{x, -1, 1\}, PlotStyle -$>$ ColorData[3, "ColorList"]]\};
+
+    \qquad Do[p1x = Chebyshev[f1x, n[[i]]];AppendTo[img1, Plot[p1x, {x, -1, 1}]], {i, 1, 4}]
+
+    \qquad img2 = \{Plot[f2x, \{x, -1, 1\}, PlotStyle -$>$ ColorData[3, "ColorList"]]\};
+
+    \qquad Do[p2x = Chebyshev[f2x, n[[i]]];AppendTo[img2, Plot[p2x, \{x, -1, 1\}]], \{i, 1, 4\}]
+
+    \qquad img1
+
+    \qquad img2
+
+具体结果图如下：
+
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{1}$的图像}
+  \includegraphics[width=0.5\textwidth]{forgin1.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \subfigure[$n=20$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f120.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=40$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f140.png}
+    \end{minipage}%
+    }%
+    \subfigure[$n=60$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f160.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=80$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f180.png}
+    \end{minipage}
+    }%
+    \centering
+    \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{2}$的图像}
+  \includegraphics[width=0.5\textwidth]{forgin2.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \subfigure[$n=20$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f220.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=40$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f240.png}
+    \end{minipage}%
+    }%
+    \subfigure[$n=60$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f260.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=80$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{f280.png}
+    \end{minipage}
+    }%
+    \centering
+    \end{figure}
+
+通过对如上原函数图像以及插值多项式图像对比来看，当节点数$n=20$时，插值函数图像与原函数仍有一定区别；而当节点数为$n=40,60,80$时，插值函数则基本与原函数图像一致，插值效果十分良好。
+
+接下来分析为何最开始出现所谓某种龙格现象：通过翻查符号计算笔记与查看有关内置切比雪夫函数ChebyshevT与绘图函数Plot的帮助文档可以看到，由于系统采用内置的切比雪夫多形式，当我们采用浮点数利用循环以及内置函数生成插值函数时，过早的把插值函数计算相关公式给出具体化形式，这样前面所计算离散傅里叶变换时保留的高精度再次降为了低精度，系统的绘图函数Plot就识别到了具体化形式，造成绘图出现错误。当修改代码，利用显式的多项式表达时，则会给出精确插值函数图，从而不会出现绘图错误。这种过早的Evalu造成精度的缺失，比如：Plot[Chebyshev[60,x],\{x,-1,1\}]与Plot[Evalu[Chebyshev[60,x]],\{x,-1,1\}]这两种绘制60阶切比雪夫多项式的绘图代码，前者则没有错误，而后者，由于提早的给出计算表达，造成绘图的错误，这就类似上述插值多项式绘图的错误。
+
+\subsection{定理二的验证}
+首先，我们验证两个函数是否满足定理二的条件。对于函数$f_{1}$，我们生成其导数图像如下：
+\begin{figure}[H]
+    %\caption{函数f_{1}的各阶导数图像}
+    \centering
+    \subfigure[一阶导.]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{df1.png}
+    \end{minipage}
+    }%
+    \subfigure[二阶导.]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{df2.png}
+    \end{minipage}%
+    }%
+    \subfigure[三阶导.]{
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{df3.png}
+    \end{minipage}
+    }%
+    \centering
+    \end{figure}
+
+可以看到函数$f_{1}^{'''}$便不连续，进而不是绝对连续，故对定理二中的$m$至多为$3$；而对于函数$f_{2}$，易知其为无穷阶连续可导，对于如下定理的验证，我们不妨也取$m=3$。
+
+我们定义简单的数值计算有界变差，将区间$[-1,1]$一千等分，然后取区间端点函数值的差值的绝对值之和，作为数值化的有界变差，代码如下：
+
+    \textbf{boundedvariation[f\_]} := Module[\{i, n, xn, yn, sum\},
+
+    \qquad    n = 1000;
+
+    \qquad    xn = Table[N[-1 + i 2/n, 50], \{i, 0, n\}];
+
+    \qquad    yn = Limit[f, x -$>$ xn];(*yn=f/.x[Rule]xn;*)
+
+    \qquad    sum = 0;
+
+    \qquad    For[i = 2, i $<=$ n + 1, i++,sum += N[Abs[yn[[i]] - yn[[i - 1]]], 20]];
+
+    \qquad    sum]
+
+接下来，为了验证定理二中有关系数的不等式，为了输出方便与美观，将等式两边取对数，并将这一输出$Module$化，写为函数，如下：
+
+    \textbf{coeffvariation[f\_, v\_, m\_, n\_]} := Module[\{i, y, z, r, temp, tempp\},
+
+    \qquad y = Table[N[Cos[k Pi/n], 50], \{k, 0, n\}];(*生成插值节点*)
+
+    \qquad Do[AppendTo[y, y[[n - i + 2]]], \{i, 2, n\}];(*拓展节点*)
+
+    \qquad z = f /. x -> y;(*生成插值节点处函数值*)
+
+    \qquad r = Re[FFT[z]];(*傅里叶变换*)
+
+    \qquad temp = \{\};
+
+    \qquad For[i = m + 1, i $<=$ n + 1, i++, AppendTo[temp, r[[i]]]];
+
+    \qquad tempp = Table[2 v/Pi/((i - m)\^(m + 1)), \{i, m + 1, n + 1\}];
+
+    \qquad ListLogLogPlot[\{temp, tempp\}]]
+
+其次为了计算插值的无穷范数下的误差，我们采取计算有限变差同样的思想，将区间$[-1,1]$一千等分，取节点处原函数与插值函数的函数值的差值的绝对值中的最大值作为无穷范数误差，函数代码如下：
+
+    \textbf{MaxError[f\_, px\_]} := Module[\{n, xn, yn, error\},
+
+    \qquad n = 1000;
+
+    \qquad xn = Table[N[-1 + i 2/n, 50], \{i, 0, n\}];
+
+    \qquad yn = Abs[(f - px) /. x -$>$ xn];
+
+    \qquad error = Max[yn]]
+
+从而为了验证误差满足相应的不等式，我们取结点数为$5,15,20,...,100$的插值多项式计算误差，并出于生成图片的美观性与便捷，仍在等式两边取对数，并$Module$化，具体函数如下：
+
+    \textbf{errorthm2[f\_, v\_, m\_]} := Module[\{error1, p1x, temp\},
+
+    \qquad error1 = \{\};
+
+    \qquad Do[p1x = Chebyshev[f, i];AppendTo[error1, \{i, MaxError[f, p1x]\}], \{i, 5, 100, 5\}];
+
+    \qquad temp = Table[4 v/Pi/m/((i - m)\^m), \{i, 5, 100, 5\}];
+
+    \qquad ListLogLogPlot[\{error1, temp\}]]
+
+\subsubsection{函数$f_{1}$的验证}
+首先验证系数满足的不等式，分别取节点数为$n=20,40,60,80$验证，具体结果图片如下：
+\begin{figure}[H]
+    \centering
+    \subfigure[$n=20$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f1coff20.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=40$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f1coff40.png}
+    \end{minipage}%
+    }%
+    \subfigure[$n=60$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f1coff60.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=80$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f1coff80.png}
+    \end{minipage}
+    }%
+    \centering
+    \end{figure}
+
+其中蓝色点为切比雪夫插值多项式系数的点值，黄色点为不等式右侧的值。通过对图片的观察我们可以看到，大致结果是满足的，只不过个别系数点处不满足，这可能是由于数值计算的有界变差计算的并非是真正的上界，所以造成一定的结果误差。不过整体上证明了较好的满足了定理的结论。
+
+接下来证明插值的无穷范数误差满足定理中的不等式，首先直接调用上述函数$\mathbf{errorthm2[f_{1}, v_{1}, 3]}$生成对应不同节点数$n$处误差与右侧值的点图：
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{1}$的关于定理二的误差验证}
+  \includegraphics[width=0.5\textwidth]{thm2error11.png}
+\end{figure}
+
+其中蓝色点为插值多项式的无穷范数下误差点值，黄色点为不等式右侧的值。通过对图片观察可以看到，蓝色点均在货色点处下面，这较好的满足了定理二。
+
+接下来我们求出误差收敛阶，绘制出误差关于关于对数坐标下的点图，在这里取节点数为$n=1,10,20,...,200$，并利用交错点求出两点的斜率进而取平均，并绘制相应图片结果如下：
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{1}$的关于定理二的误差验证}
+  \includegraphics[width=0.5\textwidth]{thm2error12.png}
+\end{figure}
+
+第一行数字为斜率的平均值，红色直线为出于对比考虑曲线绘制的某一斜率为$-3$的直线。通过观察图片可以看到，这一斜率为3（因为是对数坐标下，所以斜率为负的），并且随着节点数的增多，误差逐处在这一直线处，并且较好的符合前面所求的斜率值，故误差收敛阶为3。
+
+\subsubsection{函数$f_{2}$的验证}
+首先验证系数满足的不等式，分别取节点数为$n=20,40,60,80$验证，具体结果图片如下：
+\begin{figure}[H]
+    \centering
+    \subfigure[$n=20$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f2coff20.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=40$.]
+    {
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f2coff40.png}
+    \end{minipage}%
+    }%
+    \subfigure[$n=60$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f2coff60.png}
+    \end{minipage}
+    }%
+    \subfigure[$n=80$.]{
+    \begin{minipage}[t]{0.25\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{thm2f2coff80.png}
+    \end{minipage}
+    }%
+    \centering
+    \end{figure}
+
+其中蓝色点为切比雪夫插值多项式系数的点值，黄色点为不等式右侧的值。通过对图片的观察我们可以看到，大致结果是满足的，只不过个别系数点处不满足，这可能是由于数值计算的有界变差计算的并非是真正的上界，所以造成一定的结果误差。不过整体上证明了较好的满足了定理。
+
+接下来证明插值的无穷范数误差满足定理中的不等式，首先直接调用上述函数$\mathbf{errorthm2[f_{2}, v_{2}, 3]}$生成对应不同节点数$n$处误差与右侧值的点图：
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{2}$的关于定理二的误差验证}
+  \includegraphics[width=0.5\textwidth]{thm2error21.png}
+\end{figure}
+
+其中蓝色点为插值多项式的无穷范数下误差点值，黄色点为不等式右侧的值。通过对图片观察可以看到，蓝色点均在货色点处下面，这较好的满足了定理二。
+
+%接下来我们求出误差收敛阶，绘制出误差关于关于对数坐标下的点图，在这里取节点数为$n=1,10,20,...,200$，并利用交错点求出两点的斜率进而取平均，并绘制相应图片结果如下：
+%\begin{figure}[H]
+%  \centering
+%  \caption{函数$f_{2}$的关于定理二的误差验证}
+%  \includegraphics[width=0.5\textwidth]{thm2error22.png}
+%\end{figure}
+
+%第一行数字为斜率的平均值，红色直线为出于对比考虑曲线绘制的某一斜率为$-27$的直线。通过观察图片可以看到，这一斜率为27（因为是对数坐标下，所以斜率为负的），并且随着节点数的增多，误差逐处在这一直线处，并且较好的符合前面所求的斜率值.但是，对于这个函数，实验过程中发现，其斜率是逐渐增大的，也即误差收敛阶逐渐增大，所以此处斜率并无太大意义！但这并不妨碍定理二的证明！
+
+\subsection{定理三的验证}
+
+\subsubsection{函数$f_{1}$的验证}
+已知函数$f_{1}$在$x=0$处不解析，故不满足定理三的条件，从而不需要验证该定理。
+
+\subsubsection{函数$f_{2}$的验证}
+对于函数$f_{2}$，首先可以看出相应的复变函数在$\pm \frac{1}{5} i$处不解析，从而$Bernstein$半短轴为$\frac{1}{5}$，进而半长轴为$\sqrt{1+\frac{1}{25}}$。
+
+为了计算函数在椭圆区域内的最大值，将椭圆离散化，如下：
+
+    \textbf{bound[f\_, a\_, b\_]} :=bound[f, a, b] = Module[\{m, n, step, theta, result\},
+
+    \qquad step = Table[x, \{x, 0.01, 0.99, 0.01\}];
+
+    \qquad theta = Table[x, \{x, 0, 2 Pi, 0.02\}];
+
+    \qquad m = Length[step];
+
+    \qquad n = Length[theta];
+
+    \qquad result = Table[Norm[f /. x -$>$ (step[[i]]*(a*Cos[theta[[j]]] + b*Sin[theta[[j]]]*I))], \{i, 1, m\}, \{j, 1, n\}];
+
+    \qquad Max[result]]
+
+从而我们验证节点数为$40$时插值函数系数是否满足定理，具体定义函数如下：
+
+    \textbf{coeffellipse[f\_, a\_, b\_, n\_]} := Module[\{i, y, z, r, temp, tempp, max\},
+
+    \qquad y = Table[N[Cos[k Pi/n], 50], \{k, 0, n\}];(*生成插值节点*)
+
+    \qquad Do[AppendTo[y, y[[n - i + 2]]], \{i, 2, n\}];(*拓展节点*)
+
+    \qquad z = f /. x -$>$ y;(*生成插值节点处函数值*)
+
+    \qquad r = Re[FFT[z]];(*傅里叶变换*)
+
+    \qquad temp = \{\};
+
+    \qquad For[i = 1, i $<=$ n + 1, i++, AppendTo[temp, Abs[r[[i]]]]];
+
+    \qquad max = bound[f, a, b];
+
+    \qquad tempp = Table[2*max/(a + b)\^(i - 1), \{i, 1, n + 1\}];
+
+    \qquad ListLogPlot[\{temp, tempp\}]]
+
+由此直接调用上述函数$\mathbf{coeffellipse[f_{2},\sqrt{1+\frac{1}{25}}],\frac{1}{5},40]}$，故友如下结果图：
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{2}$的关于定理三的切比雪夫系数验证}
+  \includegraphics[width=0.5\textwidth]{thm3f2coff.png}
+\end{figure}
+
+可以看到，这十分符合定理的结论。
+
+接下来我们验证无穷范数的误差满足定理，为此，我们取节点数为$n=,5,10,...,100$，从而有如下函数：
+
+    \textbf{errorthm3[f\_, a\_, b\_]} := Module[\{error1, p1x, temp, max\},
+
+    \qquad error1 = \{\};
+
+    \qquad Do[p1x = Chebyshev[f, i]; AppendTo[error1, MaxError[f, p1x]], \{i, 5, 100, 5\}];
+
+    \qquad max = bound[f, a, b];
+
+    \qquad temp = Table[4*max*(a + b)\^(-i)/(a + b - 1), \{i, 5, 100, 5\}];
+
+    \qquad ListLogPlot[\{error1, temp\}]]
+
+进而直接调用上述函数$\mathbf{errorthm3[f_{2},\sqrt{1+\frac{1}{25}}],\frac{1}{5}]}$，即有如下结果图：
+\begin{figure}[H]
+  \centering
+  \caption{函数$f_{2}$的关于定理三的误差验证}
+  \includegraphics[width=0.5\textwidth]{thm3f2error.png}
+\end{figure}
+
+可以看到，这十分符合定理结论。
+
+\section{Computer Code}
+
+代码部分请参见附件!(ChebyshevInterpolation.nb)。
+
+\end{document}

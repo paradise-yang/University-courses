@@ -1,0 +1,557 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subfigure}
+\usepackage{amsfonts}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{Haar与Shannon小波配点法求解偏微分方程}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Introduction}
+小波分析作为Fourier分析的延伸与发展，其凭借独特的优势，在许多领域都发挥着重要的应用。而在数学领域中，小波分析更是可以解决很多问题，尤其是偏微分方程数值解上。偏微分方程常用来的描述自然界中许多的物理现象，由于这些方程大多求不出解析解，因此其数值解的近似解则是一个十分重要的课题，而对于传统的求解偏微分方程数值解的方法或多或少具有一定的局限性，相较于此，利用小波求解偏微分方程数值解则成为一个较为便捷有效的方法。
+
+本次实验介绍与探究基于$Haar$小波与$Shannon$小波的配点法近似的求解力学的有关偏微分方程：基于$Haar$小波求解抛物型的一维热传导方程、基于$Haar$小波求解$Wave$方程、基于$Shannon$小波求解对流扩散方程(Convection-Diffusion)。其大致思想为：利用小波基函数的线性组合形式逼近某一未知高阶混合偏导数，通过定积分得到原方程的离散形式，利用$Mathematica$编程求出逼近系数，从而进一步得到未知函数的数值解。
+
+\section{基于$Haar$小波的配点法求解}
+\subsection{$Haar$小波相关知识}
+$Harr$小波具有紧支撑性、正交性、对称性，是最简单的正交小波。其尺度函数在区间$[0,1]$上的的取值是常数1，其他区间为0，其表达式如下：
+\begin{displaymath}
+  \varphi (x)= \left \{
+  \begin{array}{cc}
+    1, & 0 \leq x < 1 \\
+    0, & else
+  \end{array} \right.
+\end{displaymath}
+进一步，$Haar$小波母函数的表达式为：
+\begin{displaymath}
+  \psi(x)=\left \{
+  \begin{array}{cc}
+    1, & 0 \leq x < \frac{1}{2} \\
+    -1, & \frac{1}{2} \leq x < 1 \\
+    0, & else
+  \end{array} \right.
+\end{displaymath}
+通过对母小波$\psi(x)$进行伸缩与平移后，生成小波函数族$\{ \psi_{n}(x) \},n=1,2,...$，即：
+\begin{displaymath}
+  \psi_{n}(x)=\psi(2^{j} x-k),\qquad n=2^{j}+k,\quad j\geq0,0\leq k <2^{j}
+\end{displaymath}
+并取$\psi_{0}(x)=\varphi(x)$，则定义$Haar$小波函数向量$\psi_{(m)}(x)$为：
+\begin{displaymath}
+  \psi_{(m)}(x)=[ \psi_{0}(x),\psi_{1}(x),...,\psi_{m-1}(x) ]^{T}.
+\end{displaymath}
+在$x\in [0,1)$区间上配置点$x_{l}=(l-\frac{1}{2})/m,l=1,2,...,m$，这里$m=2^{j}$，则有$m$阶$Haar$小波矩阵$H_{m}$定义如下：
+\begin{displaymath}
+  H_{m}=[ \psi_{(m)}(\frac{1}{2m}),\psi_{(m)}(\frac{3}{2m}),...,\psi_{(m)}(1-\frac{1}{2m}) ]
+\end{displaymath}
+其中较为简单的前三项为：
+\begin{displaymath}
+  H_{1}=[1],H_{2}=\left [ \begin{array}{cc}
+                            1 & 1 \\
+                            1 & -1
+                          \end{array}  \right ]
+\end{displaymath}
+\begin{displaymath}
+  H_{4}=[\psi_{(4)}(\frac{1}{8}),\psi_{(4)}(\frac{3}{8}),\psi_{(4)}(\frac{5}{8}),\psi_{(4)}(\frac{7}{8}) ]=\left [ \begin{array}{cccc}
+              1 & 1 & 1 & 1 \\
+              1 & 1 & -1 & -1 \\
+              1 & -1 & 0 & 0 \\
+              0 & 0 & 1 & -1
+            \end{array} \right ]
+\end{displaymath}
+
+接下来我们讨论$Harr$小波的积分算子矩阵。一般情况下，若对$Haar$小波函数向量$\psi_{(m)}(x)$进行积分，则有：
+\begin{displaymath}
+  \int_{0}^{t} \psi_{(m)}(x) dx = P_{m} \psi_{(m)}(t),\quad t\in [0,1)
+\end{displaymath}
+其中$P_{m}$为$m$阶$Haar$小波积分算子方阵,其递推形式如下：
+\begin{displaymath}
+  P_{m}=\frac{1}{2m} \left [ \begin{array}{cc}
+                               2mP_{m/2} & -H_{m/2} \\
+                               H_{m/2}^{-1} & 0
+                             \end{array} \right ]
+  ,\quad P_{1}=[\frac{1}{2}].
+\end{displaymath}
+从而进一步积分则有：
+\begin{displaymath}
+  \int_{0}^{t} P_{m} \psi_{(m)}(x) dx = P_{m}^{2} \psi_{(m)}(t),\quad t\in [0,1)
+\end{displaymath}
+
+\subsection{$Haar$小波逼近}
+设任意一个函数$y(x)\in L^{2}[0,1)$，则其可以展开成$Haar$小波级数形式：
+\begin{displaymath}
+  y(x)=\sum_{n=0}^{\infty} c_{n} \psi_{n}(x)
+\end{displaymath}
+其中，小波系数$c_{n}$的表达式为：
+\begin{displaymath}
+  c_{n}=2^{j}\int_{0}^{1} y(x) \psi_{n}(x) dx,\qquad n=2^{j}+k,\quad j\geq0,0\leq k<2^{j}
+\end{displaymath}
+进而依据数值分析与逼近理论可得，函数$ y(x)=\sum_{n=0}^{\infty} c_{n} \psi_{n}(x)$能被截断成有限项级数：
+\begin{displaymath}
+  y(x) \approx \sum_{n=0}^{m-1} c_{n} \psi_{n}(x)=c_{(m)}^{T}\psi_{(m)}(x),\quad c_{(m)}^{T}=[c_{0},c_{1},...,c_{m-1}],m=2^{j}.
+\end{displaymath}
+并可知，若$y(x)$具有一阶有界导数，则逼近误差为：
+\begin{displaymath}
+  \parallel y(x)-\sum_{n=0}^{m-1} c_{n} \psi_{n}(x) \parallel _{L^{2}[0,1)} =O(\frac{1}{m})
+\end{displaymath}
+
+从而根据上述方程能够得出，小波逼近的误差边界与$Haar$小波分解的级数水平成反比例关系。
+
+\subsection{基于$Haar$小波求解一维热传导方程}
+考虑如下一维热传导方程问题：
+\begin{displaymath}
+  \left \{
+  \begin{array}{ll}
+    \frac{\partial u}{\partial t}=\frac{1}{4\pi^{2}} \frac{\partial^{2} u}{\partial x^{2}} & x\in(0,1),t\in(0,T) \\
+    u(x,0)=f(x) & x\in(0,1) \\
+    u(0,t)=u(1,t)=0 & t\in(0,T)
+  \end{array}
+  \right.
+\end{displaymath}
+当$f(x)=sin2\pi x$时，精确解为$u(x,t)=e^{-t}sin2\pi x$。
+
+由于是$x,t$两个变量，规定记号：$\dot{u}$表示$u$对$t$的导数，$u'$表示$u$对$x$的导数。高阶导数以此类推即可。
+
+考虑$\dot{u}''(x,t)$的小波逼近：
+\begin{displaymath}
+  \dot{u}''(x,t)\approx \sum_{n=0}^{m-1}c_{n} \psi_{n}(x)=c_{(m)}^{T}\psi_{(m)}(x)
+\end{displaymath}
+其中$c_{n}$为小波系数，即$c_{n}=2^{j}\int_{0}^{1}\dot{u}''(x,t)\psi_{n}(x) dx$，特别的$n=0$时，$c_{0}=\int_{0}^{1}\dot{u}''(x,t) dx$。
+
+将时域$[0,T]$离散化分解为$N$份，其步长即为$\Delta t=\frac{T}{N}$，并记：
+\begin{displaymath}
+  t_{s}=s\Delta t,s=0,1,...,N.
+\end{displaymath}
+
+利用数值逼近的表达式，先对时间变量从$t_{s}$到$t$进行一次积分，再对空间变量从$0$到$x$进行两次积分，则依次得到如下方程：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  u''(x,t) &=& (t-t_{s})c_{(m)}^{T}\psi_{(m)}(x)+u''(x,t_{s}) \\
+  u'(x,t) &=& (t-t_{s})c_{(m)}^{T} P_{m} \psi_{(m)}(x)+u'(x,t_{s})-u'(0,t_{s})+u'(0,t) \\
+  u(x,t) &=& (t-t_{s})c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x)+u(x,t_{s})-u(0,t_{s})+x[u'(0,t)-u'(0,t_{s})]+u(0,t)
+\end{eqnarray}
+对式(3)，两边对$t$求导，得到：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \dot{u}(x,t) &=& (t-t_{s})c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x)+\dot{u}(0,t)+x\dot{u}'(0,t)
+\end{eqnarray}
+将$x=1$代入式(3)与(4)，并结合边值条件$u(0,t)=\dot{u}(0,t)=u(1,t)=\dot{u}(1,t)=0$，即得到：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  u'(0,t)-u'(0,t_{s}) &=& -(t-t_{s})c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(1) \\
+  \dot{u}'(0,t) &=& -c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(1)
+\end{eqnarray}
+令$x=x_{l},t=t_{s+1}$，将式(5)和式(6)代入式(1)(2)(3)(4)，依次得到如下方程：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  u''(x_{l},t_{s+1}) &=& \Delta t c_{(m)}^{T}\psi_{(m)}(x_{l})+u''(x_{l},t_{s+1}) \\
+  u'(x_{l},t_{s+1}) &=& \Delta t c_{(m)}^{T} P_{m} \psi_{(m)}(x_{l})+u'(x_{l},t_{s})- \Delta t c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(1) \\
+  u(x_{l},t_{s+1}) &=& \Delta t c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x_{l})+u(x_{l},t_{s})-x_{l} \Delta t c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(1) \\
+  \dot{u}(x_{l},t_{s+1}) &=& c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x_{l})-x_{l}c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(1)
+\end{eqnarray}
+接下来将方程$\frac{\partial u}{\partial t}=\frac{1}{4\pi^{2}} \frac{\partial^{2} u}{\partial x^{2}}$在点$(x_{l},t_{s+1})$上离散，得到：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \dot{u}(x_{l},t_{s+1}) &=& \frac{1}{4\pi^{2}} u''(x_{l},t_{s+1})
+\end{eqnarray}
+将式(10)代入式(11)，得到：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x_{l})-x_{l}c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(1) &=& \frac{1}{4\pi^{2}} u''(x_{l},t_{s+1})
+\end{eqnarray}
+进而根据初始条件$u(x_{l},0)=\sin 2\pi x_{l},u'(x_{l},0)=2\pi \cos 2\pi x_{l},u''(x_{l},0)=-4\pi^{2}\sin 2\pi x_{l}$，根据式(7)解出$u''(x_{l},t_{s+1})$，代入式(12)得到方程，通过选取足够多的点$x_{l}$，逐时间层通过迭代法，求出各层对应的$Haar$小波系数$c_{n}$，并可以再利用式(3)求出原方程在该时间层的数值模拟解。
+
+通过$Mathematica$编程实现该数值方法，如下给出了$\Delta t=0.0001,t=0.01,j=5$时的数值解与精确解的对比结果，以及相应的误差值：
+\begin{figure}[H]
+  \centering
+  \caption{t=0.01，j=5时数值解与精确解对比}
+  \includegraphics[width=0.6\textwidth,height=0.53\textheight]{pde11.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{t=0.01，j=5时数值解与精确解曲线对比}
+    \subfigure[数值解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde12.png}
+    \end{minipage}
+    }%
+    \subfigure[精确解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde13.png}
+    \end{minipage}%
+    }%
+    \subfigure[对比图]{
+    \begin{minipage}[t]{00.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde14.png}
+    \end{minipage}
+    }%
+    \centering
+\end{figure}
+
+运用同样的方法，如下给出了$\Delta t=0.0001,t=0.01,j=6$时的数值解与精确解的对比结果，以及相应的误差值：
+\begin{figure}[H]
+  \centering
+  \caption{t=0.01，j=6时数值解与精确解对比}
+  \includegraphics[width=0.7\textwidth,height=0.65\textheight]{pde21.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{t=0.01，j=6时数值解与精确解曲线对比}
+    \subfigure[数值解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde22.png}
+    \end{minipage}
+    }%
+    \subfigure[精确解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde23.png}
+    \end{minipage}%
+    }%
+    \subfigure[对比图]{
+    \begin{minipage}[t]{00.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde24.png}
+    \end{minipage}
+    }%
+    \centering
+\end{figure}
+
+可以看到上述基于$Haar$小波的配点法求解热传导方程是可行的，误差较小。
+
+\subsection{基于$Haar$小波求解$Wave$方程}
+接下来我们讨论基于$Haar$小波求解$Wave$方程，我们考虑如下$Wave$方程以及对应的边界与初值条件：
+\begin{displaymath}
+  \left \{
+  \begin{array}{cc}
+    \frac{\partial^{2} u}{\partial t^{t}}=c_{0} \frac{\partial^{2} u}{\partial x^{2}} & x\in(0,1),t\geq 0 \\
+    u(0,t)=\zeta(t),\frac{\partial u}{\partial x}|_{x=0}=\chi(t) & t\geq 0 \\
+    u(x,0)=\alpha(x),\frac{\partial u}{\partial t}|_{t=0}=\beta(x) & 0\leq x\leq 1
+  \end{array}
+  \right.
+\end{displaymath}
+我们仍类似操作，将时域$[0,T]$离散化分解为$N$份，其步长即为$\Delta t=\frac{T}{N}$，并记：
+\begin{displaymath}
+  t_{s}=s\Delta t,s=0,1,...,N.
+\end{displaymath}
+
+我们考虑$\ddot{u}''(x,t)$在区间$(t_{s},t_{s+1}]$展开为$Haar$小波级数：
+\begin{displaymath}
+  \ddot{u}''(x,t)=\sum_{n=0}^{m-1}c_{n} \psi_{n}(x)=c_{(m)}^{T}\psi_{(m)}(x)
+\end{displaymath}
+然后对其在区间$[t_{s},t_{s+1}]$上关于$t$进行两次积分，再对$x$在区间$[0,x]$上进行两次积分，得到如下方程：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \dot{u}''(x,t) &=& (t-t_{s})c_{(m)}^{T} \psi_{(m)}(x) +\dot{u}''(x,t_{s}) \\
+  u''(x,t) &=& \frac{1}{2} (t-t_{s})^{2} c_{(m)}^{T} \psi_{(m)}(x) +(t-t_{s}) \dot{u}''(x,t_{s})+u''(x,t_{s}) \\
+  \ddot{u}'(x,t) &=& c_{(m)}^{T} P_{m} \psi_{(m)}(x) + \ddot{u}'(0,t) \\
+  \ddot{u}(x,t) &=& c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x)+x\ddot{u}'(0,t)+\ddot{u}(x,t) \\
+  \dot{u}(x,t) &=& (t-t_{s})c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x)+x[\dot{u}'(0,t)-\dot{u}'(0,t_{s})]+\dot{u}(0,t)-\dot{u}(0,t_{s})+\dot{u}(x,t_{s}) \\
+  u(x,t) &=& \frac{1}{2} (t-t_{s})^{2} c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x) +x[u'(0,t)-u'(0,t_{s})-(t-t_{s})\dot{u}'(0,t_{s})] {}
+  \nonumber\\
+  & & {}
+  +u(0,t)-u(0,t_{s})-(t-t_{s})(\dot{u}(0,t_{s})-\dot{u}(x,t_{s}))+u(x,t_{s})
+\end{eqnarray}
+进一步，将$Wave$方程的边界条件和初始条件分别代入上述方程式(13)——(18)中，并取$x=x_{l},t=t_{s+1}$，则有如下方程：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \dot{u}''(x_{l},t_{s+1}) &=& \Delta t c_{(m)}^{T}\psi_{(m)}(x_{l})+\dot{u}''(x_{l},t_{s}) \\
+  u''(x_{l},t_{s+1}) &=& \frac{1}{2} \Delta t^{2} c_{(m)}^{T} \psi_{(m)}(x_{l}) +\Delta t \dot{u}''(x_{l},t_{s})+u''(x_{l},t_{s}) \\
+  \ddot{u}'(x_{l},t_{s+1}) &=& c_{(m)}^{T} P_{m} \psi_{(m)}(x_{l}) + \ddot{\chi}(t_{s+1}) \\
+  \ddot{u}(x_{l},t_{s+1}) &=& c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x_{l})+x_{l}\ddot{\chi}(t_{s+1})+\ddot{\zeta}(t_{s+1}) \\
+  \dot{u}(x_{l},t_{s+1}) &=& \Delta t c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x_{l})+x_{l}[\dot{\chi}(t_{s+1})-\dot{\chi}(t_{s})]+\dot{\zeta}(t_{s+1})-\dot{\zeta}(t_{s})+\dot{u}(x_{l},t_{s}) \\
+  u(x_{l},t_{s+1}) &=& \frac{1}{2} \Delta t^{2} c_{(m)}^{T} P_{m}^{2} \psi_{(m)}(x_{l}) +x_{l}[\chi(t_{s+1})-\chi(t_{s})-\Delta t \dot{\chi}(t_{s})] {} \nonumber\\ & & {}
+  +\zeta(t_{s+1})-\zeta (t_{s})-\Delta t(\dot{\chi}(t_{s})-\dot{u}(x_{l},t_{s}))+u(x_{l},t_{s})
+\end{eqnarray}
+进而，将$x=x_{l},t=t_{s+1}$代入原方程即有：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \ddot{u}(x_{l},t_{s+1}) &=& c_{0}^{2} u''(x_{l},t_{s+1})
+\end{eqnarray}
+然后再将方程式(20)——(22)代入方程式(25)中，即得到：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  c_{m}^{T}[-\frac{1}{2}c_{0}^{2}\Delta t^{2}\psi_{(m)}(x_{l})+P_{m}^{2} \psi_{(m)}(x_{l})]=c_{0}^{2}\Delta t^{2}\dot{u}''(x_{l},t_{s})+ c_{0}^{2}u''(x_{l},t_{s})-x_{l}\ddot{\chi}(t_{s+1})-\ddot{\zeta}(t_{s+1})
+\end{eqnarray}
+通过对方程式(26)，以及相应的初始值条件$u(x_{l},0)=\alpha(x_{l}),u''(x_{l},0)=\alpha''(x_{l}),\dot{u}''(x_{l},0)=\beta''(x_{l}),\dot{u}(x_{l},0)=\beta(x_{l})$，我们可以计算出相应的$c_{(m)}^{T}$。从而同样类似，通过选取足够多的点$x_{l}$，逐时间层通过迭代法，求出各层对应的$Haar$小波系数$c_{n}$，并可以再利用式(24)求出原方程在该时间层的数值模拟解。
+
+我们考虑一个具体的、特殊的$Wave$方程，设$c_{0}=1$，并设边界条件与初值条件为：
+\begin{displaymath}
+  \begin{array}{ll}
+    \zeta(t)=0 & \chi(t)=\pi \cos\pi ) \\
+    \alpha(x)=\sin \pi x & \beta(x)=0
+  \end{array}
+\end{displaymath}
+从而方程式(26)化简为如下形式：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+   c_{m}^{T}[-\frac{1}{2}c_{0}^{2}\Delta t^{2}\psi_{(m)}(x_{l})+P_{m}^{2} \psi_{(m)}(x_{l})]=\Delta t^{2}\dot{u}''(x_{l},t_{s})+u''(x_{l},t_{s})+x_{l}\pi^{3}\cos \pi t_{s+1}
+\end{eqnarray}
+进而通过$Mathematica$编程实现，得到$\Delta t=0.0001,t=0.001$下$j=4$时的数值解与精确解的对比结果，以及相应的误差值：
+\begin{figure}[H]
+  \centering
+  \caption{t=0.001，j=4时数值解与精确解对比}
+  \includegraphics[width=0.6\textwidth]{pde31.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{t=0.001，j=4时数值解与精确解曲线对比}
+    \subfigure[数值解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde32.png}
+    \end{minipage}
+    }%
+    \subfigure[精确解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde33.png}
+    \end{minipage}%
+    }%
+    \subfigure[对比图]{
+    \begin{minipage}[t]{00.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde34.png}
+    \end{minipage}
+    }%
+    \centering
+\end{figure}
+
+运用同样的方法，如下给出了$\Delta t=0.0001,t=0.001,j=5$时的数值解与精确解的对比结果，以及相应的误差值：
+\begin{figure}[H]
+  \centering
+  \caption{t=0.001，j=5时数值解与精确解对比}
+  \includegraphics[width=0.7\textwidth]{pde41.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{t=0.001，j=5时数值解与精确解曲线对比}
+    \subfigure[数值解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde42.png}
+    \end{minipage}
+    }%
+    \subfigure[精确解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde43.png}
+    \end{minipage}%
+    }%
+    \subfigure[对比图]{
+    \begin{minipage}[t]{00.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde44.png}
+    \end{minipage}
+    }%
+    \centering
+\end{figure}
+
+可以看到上述基于$Haar$小波的配点法求解$Wave$方程是可行的，也较为精确。
+
+\section{基于$Shannon$小波的配点法求解}
+\subsection{$Shannon$小波相关知识}
+$Shannon$小波是一种在频域上具有紧支撑特性小波，也被称为$LP$小波。$Shannon$小波结合$Parseval$恒等式很容易计算其内积和扩展的系数。
+
+$Shannon$小波的尺度函数族在子空间$V_{j}$定义为：
+\begin{displaymath}
+  \varphi_{j,k}(t)=2^{\frac{1}{2}}\frac{\sin\pi(2^{j}t-k)}{\pi(2^{j}t-k)},\qquad k\in \mathbb{Z}
+\end{displaymath}
+从而其$Shannon$小波函数族在子空间$V_{j}$上的定义为：
+\begin{displaymath}
+  \psi_{j,k}(t)=2^{\frac{1}{2}} \frac{\sin \pi(2^{j}t-k-\frac{1}{2})-\sin 2\pi (2^{j}t-k-\frac{1}{2})}{\pi(2^{j}t-k-\frac{1}{2})} \qquad k\in \mathbb{Z}
+\end{displaymath}
+
+本次实验只需研究$Shannon$小波构造基函数。考虑$Shannon$尺度函数和小波函数的特殊性以及其$Fourier$变换的特性，考虑再生核：
+\begin{displaymath}
+  w(x-y)=\frac{\sin \frac{\pi}{\Delta} (x-y)}{\frac{\pi}{\Delta} (x-y)}
+\end{displaymath}
+其中$\Delta$是空间网格大小。我们将区间$[a,b]$离散化，且设置网格大小为$\Delta=(b-a)/2^{j}$，从而配置点为：$x_{i}=i\Delta,i=0,1,...,2^j$。其中，$2^{j}$是节点数，被用来离散化，同时也是最大的小波指标数。进而一个$Shannon$小波基函数$w_{j}(x-x_{n})$被构造为：
+\begin{displaymath}
+  w_{j}(x-x_{n})=\frac{\sin \frac{\pi}{\Delta} (x-x_{n})}{\frac{\pi}{\Delta} (x-x_{n})},\qquad n=0,1,...,2^{j}
+\end{displaymath}
+$Shannon$小波基函数具有如下后续求解方程所需的性质，由于其都是基本的积分变换或者运用$Fourier$变换与$Parseval$等式可以简单推出，这里不在赘述推导，直接给出性质：
+
+\textbf{(1)}对任意一个$x_{k},(k=0,1,...,2^{j})$，基函数$w_{j}(x-x_{k})$满足插值特性：
+\begin{displaymath}
+  w_{j}(x_{k}-x_{n})=\delta_{kn}.
+\end{displaymath}
+
+\textbf{(2)}基函数彼此正交：
+\begin{displaymath}
+  \int_{-\infty}^{+\infty} w_{j}(x-x_{k})w_{j}(x-x_{n}) dx = \Delta \delta_{k,n}.
+\end{displaymath}
+
+\textbf{(3)}对基函数和其导函数乘机在无穷区间积分，有：
+\begin{displaymath}
+  \int_{-\infty}^{+\infty} w_{j}(x-x_{n})\frac{d^{m}w(x-x_{k})}{dx^{m}} dx = 
+  \Delta \frac{d^{m}w_{j}(x_{n}-x_{k})}{dx^{m}}
+\end{displaymath}
+
+$w_{j}(x-x_{n})$在偏微分方程和信号处理中扮演极其重要的作用。但当$x\to\infty$时，$w_{j}(x-x_{n})$衰减很慢。因此本文仅研究有限区间的情形，即在子空间$V_{j}$中，函数$f(x)$的$Shannon$小波逼近形式为：
+\begin{displaymath}
+  f(x)\approx f_{j}=\sum_{n=0}^{2^{j}}f_{j}(x_{n})w_{j}(x-x_{n}).
+\end{displaymath}
+
+\subsection{基于$Shannon$小波求解$Convection-Diffusion$方程}
+我们考虑$Convection-Diffusion$方程以及边界与初始条件：
+\begin{displaymath}
+  \left \{
+  \begin{array}{ll}
+    \frac{\partial u}{\partial t}+\epsilon \frac{\partial u}{\partial x}=\lambda\frac{\partial^{2}u}{\partial x^{2}} & 0\leq x\leq 2,0\leq t\leq T \\
+    u(x,0)=f(x) & 0\leq x\leq 2 \\
+    u(0,t)=g_{0}(t),u(2,t)=g_{2}(t) & 0\leq t\leq T
+  \end{array}
+  \right.
+\end{displaymath}
+类似前面讨论，将区间$[0,2]$离散化成$N=2^{j}$等分，网格大小$\Delta=2/N$，配置点即为$x_{i}=i\Delta,i=0,1,...,N$。
+
+我们考虑$u(x,t)$的$Shannon$小波逼近：
+\begin{displaymath}
+  u(x,t)\approx u_{j}(x,t)=\sum_{n=0}^{N}u_{j}(x_{n},t)w_{j}(x-x_{n})
+\end{displaymath}
+我们在其两边乘以$w_{j}(x-x_{k}),k=0,1,...,N$，得到：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \frac{\partial u_{j}}{\partial t}w_{j}(x-x_{k}) &=& -\epsilon \frac{\partial u_{j}}{\partial x}w_{j}(x-x_{k})+\lambda\frac{\partial^{2}u_{j}}{\partial x^{2}}w_{j}(x-x_{k})
+\end{eqnarray}
+再对上述式(28)左右两侧进行积分，上下限为$-\infty,+\infty$，则左侧有：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \int_{-\infty}^{+\infty}\frac{\partial u_{j}}{\partial t}w_{j}(x-x_{k}) &=& \int_{-\infty}^{+\infty}\frac{\partial \sum_{n=0}^{N}u_{j}(x_{n},t)w_{j}(x-x_{n})}{\partial t}w_{j}(x-x_{k}) dx 
+  {}  \nonumber\\  & & {}
+  =\sum_{n=0}^{N}\frac{\partial u_{j}(x_{n},t)}{\partial t} \int_{-\infty}^{+\infty} w_{j}(x-x_{n})w_{j}(x-x_{k})dx
+  {}  \nonumber\\  & & {}
+  =\frac{\partial u_{j}(x_{k},t)}{\partial t} \Delta
+\end{eqnarray}
+右式则有：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \int_{-\infty}^{+\infty}-\epsilon \frac{\partial \sum\limits_{n=0}^{N}u_{j}(x_{n},t)w_{j}(x-x_{n})}{\partial x}w_{j}(x-x_{k})dx + \int_{-\infty}^{+\infty}\lambda\frac{\partial^{2}\sum\limits_{n=0}^{N}u_{j}(x_{n},t)w_{j}(x-x_{n})}{\partial x^{2}}w_{j}(x-x_{k}) dx
+   \nonumber \\  %& & 
+  =  -\epsilon\sum_{n=0}^{N}u_{j}(x_{n},t)\int_{-\infty}^{+\infty}\frac{\partial w_{j}(x-x_{n})}{\partial x}w_{j}(x-x_{k})dx + \lambda\sum_{n=0}^{N}u_{j}(x_{n},t)\int_{-\infty}^{+\infty}\frac{\partial^{2}w_{j}(x-x_{n})}{\partial x^{2}}w_{j}(x-x_{k}) dx
+   \nonumber\\%  & & {}
+  =-\epsilon\Delta\sum_{n=0}^{N}u_{j}(x_{n},t)w'_{j}(x_{k}-x_{n}) + \lambda\sum_{n=0}^{N}u_{j}(x_{n},t)w''_{j}(x_{k}-x_{n})
+\end{eqnarray}
+从而左式等于右式，有：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \frac{\partial u_{j}(x_{k},t)}{\partial t} &=& \sum_{n=0}^{N}u_{j}(x_{n},t)[-\epsilon w'_{j}(x_{k}-x_{n})+\lambda w''_{j}(x_{k}-x_{n})]
+\end{eqnarray}
+基于上述方程式(31)，每一个配置点$x_{k}$对应一个方程，因此可以得到$N+1$个方程。为了简化方程，定义如下记号：
+\begin{displaymath}
+  \begin{array}{l}
+    U=[u_{j}(x_{0},t),u_{j}(x_{1},t),...,u_{j}(x_{N},t)]^{T} \\
+    v_{kn}=-\epsilon w'_{j}(x_{k}-x_{n})+\lambda w''_{j}(x_{k}-x_{n})\\
+    V=(v_{kn})_{(N+1)\times(N+1)}
+  \end{array}
+\end{displaymath}
+从而方程被简化为：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  \frac{\partial U}{\partial t} &=& VU
+\end{eqnarray}
+最后利用$Runge-Kutta-Gill$法对上述式(32)进行求解：
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  U_{i+1} &=& U_{i}+\frac{\Delta t}{6}[K_{1}+(2-\sqrt{2})K_{2}+(2+\sqrt{2})K_{3}+K_{4}]
+\end{eqnarray}
+其中，
+\begin{eqnarray}
+% \nonumber % Remove numbering (before each equation)
+  K_{1} &=& VU_{i} \\
+  K_{2} &=& V(U_{i}+\frac{1}{2}K_{1}) \\
+  K_{3} &=& V(U_{i}+\frac{\sqrt{2}-1}{2}K_{1}+\frac{2-\sqrt{2}}{2}K_{2}) \\
+  K_{4} &=& V(U_{i}-\frac{\sqrt{2}}{2}K_{2}+\frac{2+\sqrt{2}}{2}K_{3})
+\end{eqnarray}
+整个迭代过程有初始值$U_{0}$开始，其中$U_{0}$由初始条件$u(x,0)=f(x),( 0\leq x\leq 2)$给出。
+
+接下来我们考虑一个具体的$Convection-Diffusion$方程实例：假设$\epsilon=0.1,\lambda=-0.01$，以及初始与边界条件：
+\begin{displaymath}
+  \begin{array}{c}
+    f(x)=e^{-5x} \sin \pi x \\
+    g_{0}(t)=g_{2}(t)=0
+  \end{array}
+\end{displaymath}
+从而方程的精确解表达式为：
+\begin{displaymath}
+  u(x,t)=e^{-5x+t[-0.01(25-\pi^{2})+0.5]} \sin \pi x
+\end{displaymath}
+我们同样取$\Delta t=0.0001$，并通过$Mathematica$数值编程实现，求解其在$N=16$，时间层为$t=0.01$时数值解与精确解对比情形：
+\begin{figure}[H]
+  \centering
+  \caption{t=0.001，j=4时数值解与精确解对比}
+  \includegraphics[width=0.6\textwidth]{pde51.png}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{t=0.001，j=4时数值解与精确解曲线对比}
+    \subfigure[数值解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde52.png}
+    \end{minipage}
+    }%
+    \subfigure[精确解]
+    {
+    \begin{minipage}[t]{0.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde53.png}
+    \end{minipage}%
+    }%
+    \subfigure[对比图]{
+    \begin{minipage}[t]{00.33\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{pde54.png}
+    \end{minipage}
+    }%
+    \centering
+\end{figure}
+
+我们可以看到，上述基于$Shannon$小波的配点法求解$Convection-Diffusion$方程是可行的，较为精确。
+
+\section{Conclusion}
+小波分析自产生发展以来，凭借其自身独有的一些特性与良好的性质，就被应用于各种不同的领域，包括：偏微分方程、数字信号处理、图像处理和数字水印等。
+
+基于前人的研究基础之上，本文主要介绍了其在偏微分方程数值解中的应用：介绍了$Haar$小波的小波基函数、矩阵和积分矩阵，并研究了相应的$Harr$小波配点法，并通过两个具体的偏微分方程实例，具体的研究了基于$Haar$小波求解一维热传导方程与求解$Wave$方程，借助$Mathematica$数值模拟编程，模拟了$Haar$小波解对精确解的逼近程度，并利用图表数据显示其方法的可行性和有效性；除此之外，以此类推，探讨研究了基于$Shannon$小波并结合$Runge-Kutta-Gill$迭代法的求解$Convection-Diffusion$方程的新方法——基于$Shannon$小波配点法，并通过一个具体的数值算例，说明了$Shannon$小波配点法的思想是可行的，其小波解的逼近程度是理想的。
+
+可见，在求解某些类的偏微分方程方法中，小波配点法有着良好的效果。
+
+\section{Computer Code}
+
+代码部分请参见附件!(waveletPDE.nb)。
+
+\end{document}

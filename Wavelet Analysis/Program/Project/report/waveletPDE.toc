@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}Introduction}{3}% 
+\contentsline {section}{\numberline {2}基于$Haar$小波的配点法求解}{3}% 
+\contentsline {subsection}{\numberline {2.1}$Haar$小波相关知识}{3}% 
+\contentsline {subsection}{\numberline {2.2}$Haar$小波逼近}{4}% 
+\contentsline {subsection}{\numberline {2.3}基于$Haar$小波求解一维热传导方程}{4}% 
+\contentsline {subsection}{\numberline {2.4}基于$Haar$小波求解$Wave$方程}{8}% 
+\contentsline {section}{\numberline {3}基于$Shannon$小波的配点法求解}{10}% 
+\contentsline {subsection}{\numberline {3.1}$Shannon$小波相关知识}{10}% 
+\contentsline {subsection}{\numberline {3.2}基于$Shannon$小波求解$Convection-Diffusion$方程}{11}% 
+\contentsline {section}{\numberline {4}Conclusion}{14}% 
+\contentsline {section}{\numberline {5}Computer Code}{14}% 
