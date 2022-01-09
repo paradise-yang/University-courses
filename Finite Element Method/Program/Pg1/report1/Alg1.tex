@@ -1,0 +1,392 @@
+\documentclass{ctexart}
+\textheight 23.5cm \textwidth 15.8cm
+%\leftskip -1cm
+\topmargin -1.5cm \oddsidemargin 0.3cm \evensidemargin -0.3cm
+
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{caption}
+
+\CTEXsetup[format={\Large\bfseries}]{section}
+
+\title{第一次程序作业}
+\author{PB18010496 杨乐园}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{问题介绍}
+对如下偏微分方程基于一次有限元空间和二次有限元空间分别求解相应的数值解：
+\begin{displaymath}
+  \left \{
+  \begin{array}{ll}
+    -u^{''}=f & x\in (0,1) \\
+    u(0)=0 & u(1)=0
+  \end{array}
+  \right.
+\end{displaymath}
+其中，$u(x)=(x-1)\sin x$，对网格加密程度$N=10,20,40,80$。绘制出相应的数值解与真解的对比图，计算出相应的模最大误差，以及相应的误差收敛阶，其中误差收敛阶计算公式如下：
+\begin{displaymath}
+  Ord=\frac{ln(Error_{old}/Error_{new})}{ln(N_{new}/N_{old})}
+\end{displaymath}
+
+\section{实现方法}
+\subsection{有限元变分格式}
+由等价的弱解形式：
+\begin{displaymath}
+  Find\ u_{h}\in V_{h},s.t.\langle u_{n}^{'},v^{'} \rangle = \langle f,v \rangle,for\ any\ v\in V_{h}.
+\end{displaymath}
+当我们假设对$[0,1]$进行$N$等分时，即$h_{e}=\frac{1}{N},x_{i}=ih_{e},i=0,1,2,..,N$，对于$u_{h}$在有限元空间内进行系数展开$u_{h}=\sum_{i=1}^{N-1}u_{i}\phi_{i}(x)$，并依次取有限元空间的基函数$v=\phi_{i},i=1,2,...,N-1$，从而得到如下方程组：
+\begin{displaymath}
+  \langle u_{n}^{'},\phi_{i} \rangle=\sum_{j=1}^{N-1} u_{j}\langle \phi_{j}^{'},\phi_{i}^{,} \rangle=\langle f,\phi_{i} \rangle,\quad i=1,..,N-1
+\end{displaymath}
+将其写成刚度矩阵的形式：
+\begin{displaymath}
+  K \cdot U=F
+\end{displaymath}
+其中$K=(\langle \phi_{j}^{'},\phi_{i}^{,} \rangle)_{i,j=N-1}$，$U=(u_{1},..,u_{N-1})^{T}$，$F=(f_{1},..,f_{N-1})^{T},f_{i}=\langle f,\phi_{i} \rangle$。
+
+\subsection{一次有限元空间}
+\subsubsection{基函数}
+对于一次函数空间，其基函数如下定义：
+\begin{displaymath}
+  \phi_{i}=\left \{
+  \begin{array}{ll}
+    \frac{x-x_{i-1}}{h_{e}} & x\in[x_{i-1},x_{i}] \\
+    \frac{x_{i+1}-x}{h_{e}} & x\in(x_{i},x_{i+1}],\quad i=1,..,N-1 \\
+    0 & else
+  \end{array}
+  \right.
+\end{displaymath}
+\subsubsection{刚度矩阵}
+基于如上基函数定义，有如下刚度矩阵：
+\begin{displaymath}
+  K=\frac{1}{h_{e}} \left (
+  \begin{array}{ccccc}
+    2 & -1 & \ & \ & \ \\
+    -1 & 2 & -1 & \ & \ \\
+    \ & \ddots & \ddots & \ddots & \ \\
+    \ & \ & -1 & 2 & -1 \\
+    \ & \ & \ & -1 & 2
+  \end{array}
+  \right )
+\end{displaymath}
+
+\subsection{二次有限元空间}
+\subsubsection{基函数}
+对于二次函数空间，我们考虑其$\ Lagrange\ $基函数：
+\begin{displaymath}
+  \begin{array}{lcl}
+    \varphi_{j}(x)=\left \{ \begin{array}{lcl}
+                              \frac{(2x-x_{j}-x_{j-1})(x-x_{j-1})}{h_{e}^2} & , & x\in(x_{j-1},x_{j})\\
+                              \frac{(2x-x_{j}-x_{j+1})(x-x_{j+1})}{h_{e}^2} & , & x\in[x_{j},x_{j+1})\\
+                              0 & , & else
+                            \end{array}\right. & , & j=1,..,N-1 \\
+    \psi_{i+\frac{1}{2}}=\left \{ \begin{array}{ccc}
+                                    \frac{4(x-x_{i})(x_{i+1}-x)}{h_{e}^2} & , & x\in(x_{i},x_{i+1}) \\
+                                    0 & , & else
+                                  \end{array}\right. & , & i=0,1,..,N-1
+  \end{array}
+\end{displaymath}
+\subsubsection{刚度矩阵}
+基于如上基函数定义，我们按照如下顺序对二次基函数排序：
+\begin{displaymath}
+  \{ \varphi_{1},\varphi_{2},..,\varphi_{N-1},\psi_{\frac{1}{2}},\psi_{1+\frac{1}{2}},...,\psi_{N-1+\frac{1}{2}}
+  \}
+\end{displaymath}
+从而依据上述排序，有如下刚度矩阵：
+\begin{displaymath}
+  K= \frac{1}{h_{e}} \left (
+  \begin{array}{ccccc|cccccc}
+    \frac{14}{3} & \frac{1}{3} & \ & \ & \ & -\frac{8}{3} & -\frac{8}{3} & \ & \ & \ & \ \\
+    \frac{1}{3} & \frac{14}{3} & \frac{1}{3} & \ & \ & \ & \ddots & \ddots & \ & \ & \ \\
+    \ & \ddots & \ddots & \ddots & \ & \ & \ & \ddots & \ddots & \ & \ \\
+    \ & \ & \frac{1}{3} & \frac{14}{3} & \frac{1}{3} & \ & \ & \ & \ddots & \ddots & \ \\
+    \ & \ & \ & \frac{1}{3} & \frac{14}{3} & \ & \ & \ & \ & -\frac{8}{3} & -\frac{8}{3} \\
+    \hline
+    -\frac{8}{3} & \ & \ & \ & \ & \frac{16}{3} & \ & \ & \ & \ & \ \\
+    -\frac{8}{3} & \ddots & \ & \ & \ & \ & \frac{16}{3} & \ & \ & \ & \ \\
+    \ & \ddots & \ddots & \ & \ & \ & \ & \ddots & \ & \ & \ \\
+    \ & \ & \ddots & \ddots & \ & \ & \ & \ & \ddots & \ & \ \\
+    \ & \ & \ & \ddots & -\frac{8}{3} & \ & \ & \ & \ & \frac{16}{3} & \ \\
+    \ & \ & \ & \ & -\frac{8}{3} & \ & \ & \ & \ & \ & \frac{16}{3}
+  \end{array}
+  \right )
+\end{displaymath}
+其中左上角为大小是$(N-1)\times(N-1)$的三对角方阵，右下角为大小是$N\times N$的对角阵。
+
+\subsection{数值积分方法}
+通过采用复化3点$\ Gauss\ $积分公式计算相关数值积分：
+\begin{displaymath}
+  \int_{a}^{b} f(x) dx = A_{1}f(x_{1})+ A_{2}f(x_{2})+ A_{3}f(x_{3})
+\end{displaymath}
+其中系数为：
+\begin{displaymath}
+  A_{1}=\frac{5}{18} (b-a) \qquad A_{2}=\frac{4}{9} (b-a) \qquad A_{3}=\frac{5}{18} (b-a)
+\end{displaymath}
+节点值为：
+\begin{displaymath}
+  x_{1}=\frac{a+b}{2}-\frac{\sqrt{15}}{10} \frac{b-a}{2} \qquad x_{2}=\frac{a+b}{2} \qquad x_{3}=\frac{a+b}{2}+\frac{\sqrt{15}}{10} \frac{b-a}{2}
+\end{displaymath}
+本此实验将积分区间$16$等分。
+
+\subsection{方程组求解方法}
+本次实验考虑到精度需要以及后续实验需要，利用共轭梯度迭代方法求解方程组，其中迭代的初始向量选择为$(1,1,....,1)$，终止计算精度为$10^{-16}$。
+
+\subsection{误差范数}
+对于数值解与真解，我们通过计算其无穷范数来比较误差，将区间$[0,1]$进行$100$等分，记$\Delta x=\frac{1}{100}$，分别计算数值解与真解在划分节点$x_{i}=i\cdot\Delta x,i=0,1,...,100$处差值的绝对值，并且取最大值作为误差值，即：
+\begin{displaymath}
+  error=\mathop{\max}_{i} \{ | u(x_{i})-u_{h}(x_{i}) | \}=\mathop{\max}_{i} \{ | u(x_{i})-\sum_{j=1}^{N-1}u_{j}\phi_{j}(x_{i}) | \}
+\end{displaymath}
+
+\subsection{代码结构}
+由于本次编程实验较为简单，代码结构上也相对易懂一些。
+
+1.首先将基函数编写为相应的函数，为后续计算复化积分提供需要；
+
+2.再通过指针函数以及单位区间的标准基函数对刚度矩阵$K$进行构造；
+
+3.进而利用复化3点$\ Gauss\ $积分公式计算出右侧向量$F$；
+
+4.接下来利用共轭梯度迭代法求解展开系数向量$U$；
+
+5.最后求解无穷范数误差以及相应收敛阶即可。
+
+\section{实验结果}
+\subsection{真解图像}
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.6\textwidth]{real.png}
+    \caption{插值函数误差以及收敛阶}
+  \end{center}
+\end{figure}
+
+\subsection{一次有限元空间}
+\subsubsection{误差与收敛阶}
+基于一次有限元空间数值求解误差以及收敛阶如下：
+\begin{table}[H]
+\caption{\label{table.label}一次有限元空间数值求解误差与收敛阶}
+\centering
+%\bigskip
+\begin{small}
+\begin{tabular}{|c|cc|cc|}
+\hline
+% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+n & $L^\infty$ error & order & $L^{1}$\ error & order \\\hline
+10& 0.00265486 & -- & 0.00153665 & -- \\
+20& 0.000637132 &  2.05897& 0.000384222 & 1.99978 \\
+40& 0.000159347 & 1.99942& 9.61875e-05 & 1.99802 \\
+80& 3.98302e-05 & 2.00024& 2.41866e-05 & 1.99164 \\
+160& 9.9597e-06 & 1.99969& 6.18606e-06 & 1.96711 \\\hline
+\end{tabular}
+\end{small}
+\end{table}
+
+\subsubsection{数值求解图像与真解对比}
+基于一次有限元空间数值求解图像如下，其中红色实线为真解，蓝色点图为数值解：
+\begin{figure}[H]
+    \centering
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dot10.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{com10.png}
+    \end{minipage}
+    }%
+    \caption{$N=10$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dot20.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{com20.png}
+    \end{minipage}
+    }%
+    \caption{$N=20$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dot40.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{com40.png}
+    \end{minipage}
+    }%
+    \caption{$N=40$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dot80.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{com80.png}
+    \end{minipage}
+    }%
+    \caption{$N=80$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{dot160.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{com160.png}
+    \end{minipage}
+    }%
+    \caption{$N=160$数值求解图与真解对比图}
+    \centering
+\end{figure}
+
+\subsection{二次有限元空间}
+\subsubsection{误差与收敛阶}
+基于二次有限元空间数值求解误差以及收敛阶如下：
+\begin{table}[H]
+\caption{\label{table.label}二次有限元空间数值求解误差与收敛阶}
+\centering
+%\bigskip
+\begin{small}
+\begin{tabular}{|c|cc|cc|}
+\hline
+% after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+n & $L^\infty$ error & order & $L^{1}$\ error & order \\\hline
+10& 0.0000193469 & --& 4.36455e-6 & -- \\
+20& 2.47268e-6 & 2.96796& 5.4934e-7 & 2.99006 \\
+40& 3.11898e-7 & 2.98693& 6.90573e-8 & 2.99183 \\
+80& 3.92172e-8 & 2.99151& 8.84683e-9 & 2.96456 \\
+160& 4.83711e-9 & 3.01927& 1.20434e-9 & 2.87692 \\\hline
+\end{tabular}
+\end{small}
+\end{table}
+
+\subsubsection{数值求解图像与真解对比}
+基于二次有限元空间数值求解图像如下，其中红色实线为真解，蓝色点图为数值解：
+\begin{figure}[H]
+    \centering
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2dot10.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2com10.png}
+    \end{minipage}
+    }%
+    \caption{$N=10$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2dot20.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2com20.png}
+    \end{minipage}
+    }%
+    \caption{$N=20$数值求解图与真解对比图}
+\centering
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2dot40.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2com40.png}
+    \end{minipage}
+    }%
+    \caption{$N=40$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2dot80.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2com80.png}
+    \end{minipage}
+    }%
+    \caption{$N=80$数值求解图与真解对比图}
+
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2dot160.png}
+    \end{minipage}
+    }%
+    \subfigure
+    {
+    \begin{minipage}[t]{0.4\linewidth}
+    \centering
+    \includegraphics[width=1.0\linewidth]{2com160.png}
+    \end{minipage}
+    }%
+    \caption{$N=160$数值求解图与真解对比图}
+    \centering
+\end{figure}
+
+\section{讨论}
+通过对数据以及图像的观察我们发现：随着离散程度$N$或者说有限元空间维数的增大，数值求解的结果更逼近于真解的结果，并从误差收敛阶可以看出，一次有限元空间无穷范数范数与$L^{1}$误差范数收敛阶为$2$，二次有限元空间无穷范数范数与$L^{1}$误差范数收敛阶为$3$。
+
+\section{Computer Code}
+
+代码部分请参见附件。
+
+\end{document} 

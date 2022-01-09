@@ -1,0 +1,666 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     24395,        658]
+NotebookOptionsPosition[     23697,        636]
+NotebookOutlinePosition[     24083,        653]
+CellTagsIndexPosition[     24040,        650]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"list1", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{
+    "\"\<E:\\\\study_materials\\\\Finite Element \
+Method\\\\Pg5\\\\code\\\\cg.txt\>\"", ",", "\"\<Table\>\""}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"list2", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{
+    "\"\<E:\\\\study_materials\\\\Finite Element \
+Method\\\\Pg5\\\\code\\\\MG.txt\>\"", ",", "\"\<Table\>\""}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"list", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"list1", "[", 
+        RowBox[{"[", 
+         RowBox[{"i", ",", "1"}], "]"}], "]"}], ",", 
+       RowBox[{
+        RowBox[{"list1", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "2"}], "]"}], "]"}], "-", 
+        RowBox[{"list2", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "2"}], "]"}], "]"}]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", 
+       RowBox[{"Length", "[", "list1", "]"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"img1", "=", 
+   RowBox[{"ListLinePlot", "[", 
+    RowBox[{"list1", ",", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"ColorData", "[", 
+       RowBox[{"3", ",", "\"\<ColorList\>\""}], "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"img2", "=", 
+   RowBox[{"ListLinePlot", "[", "list2", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"{", 
+  RowBox[{"img1", ",", "img2", ",", 
+   RowBox[{"Show", "[", 
+    RowBox[{"img1", ",", "img2", ",", 
+     RowBox[{"Range", "\[Rule]", "All"}]}], "]"}], ",", 
+   RowBox[{"ListLinePlot", "[", 
+    RowBox[{"list", ",", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"ColorData", "[", 
+       RowBox[{"4", ",", "\"\<ColorList\>\""}], "]"}]}]}], "]"}]}], 
+  "}"}]}], "Input",
+ CellChangeTimes->{{3.848207964179493*^9, 3.848207964450756*^9}, {
+  3.848216374429351*^9, 3.8482164450228033`*^9}, {3.848216576093533*^9, 
+  3.8482165875599527`*^9}},
+ CellLabel->
+  "In[271]:=",ExpressionUUID->"b55b63bc-cf2a-44c5-9cb5-48ff5486788b"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   GraphicsBox[{{}, {{{}, {}, 
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+        LineBox[{{10., 0.0000685}, {20., 0.0002613}, {40., 0.0009473}, {80., 
+         0.0041658}, {160., 0.0186176}, {320., 0.521905}, {640., 3.57052}, {
+         953.8263634598974, 8.92590805}}]}}, 
+      {RGBColor[
+       0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+       PointSize[
+        NCache[
+         Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}, {
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}}, {{}, {}}},
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {0, 8.92590805}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.02], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}], ",", 
+   GraphicsBox[{{}, {{{}, {}, 
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+        LineBox[{{10., 0.0000522}, {20., 0.0046162}, {40., 0.0197735}, {80., 
+         0.0335559}, {160., 0.0809167}, {320., 0.211169}, {640., 0.454337}, {
+         1280., 0.976778}}]}}, 
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}, {
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}}, {{}, {}}},
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {0, 0.976778}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.02], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}], ",", 
+   GraphicsBox[{{{}, {{{}, {}, 
+        {RGBColor[
+         0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+         PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+         LineBox[{{10., 0.0000685}, {20., 0.0002613}, {40., 0.0009473}, {80., 
+          0.0041658}, {160., 0.0186176}, {320., 0.521905}, {640., 3.57052}, {
+          953.8263634598974, 8.92590805}}]}}, 
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+        {RGBColor[
+         0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+         PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}, {
+        {RGBColor[
+         0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+         PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}}, {{}, {}}}, {{}, {{{}, {}, 
+        {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+         LineBox[{{10., 0.0000522}, {20., 0.0046162}, {40., 0.0197735}, {80., 
+          0.0335559}, {160., 0.0809167}, {320., 0.211169}, {640., 0.454337}, {
+          1280., 0.976778}}]}}, 
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+        {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}, {
+        {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}}, {{}, {}}}},
+    Range -> All,
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {0, 8.92590805}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.02], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}], ",", 
+   GraphicsBox[{{}, {{{}, {}, 
+       {RGBColor[
+        0.3333333333333333, 0.38823529411764707`, 0.2901960784313726], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+        LineBox[{{10., 0.000016299999999999996`}, {20., -0.0043549}, {
+         40., -0.018826199999999998`}, {80., -0.0293901}, {
+         160., -0.062299099999999996`}, {320., 0.31073599999999996`}, {640., 
+         3.1161830000000004`}, {930.3874267612613, 7.834542650000001}}]}}, 
+      {RGBColor[0.3333333333333333, 0.38823529411764707`, 0.2901960784313726],
+        PointSize[
+        NCache[
+         Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+       {RGBColor[
+        0.3333333333333333, 0.38823529411764707`, 0.2901960784313726], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}, {
+       {RGBColor[
+        0.3333333333333333, 0.38823529411764707`, 0.2901960784313726], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}}, {{}, {}}},
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {-0.062299099999999996`, 7.834542650000001}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.05], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.848207968764017*^9, {3.848208393322529*^9, 3.84820841102252*^9}, 
+   3.8482085264324536`*^9, 3.8482086206647635`*^9, 3.8482124186545286`*^9, 
+   3.8482165105980034`*^9, {3.848216579949115*^9, 3.8482165879661036`*^9}},
+ CellLabel->
+  "Out[276]=",ExpressionUUID->"ef8fdcc1-92a2-4f60-97d6-70b58fa35616"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"list1", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{
+    "\"\<E:\\\\study_materials\\\\Finite Element \
+Method\\\\Pg5\\\\code\\\\cg2.txt\>\"", ",", "\"\<Table\>\""}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"list2", "=", 
+   RowBox[{"Import", "[", 
+    RowBox[{
+    "\"\<E:\\\\study_materials\\\\Finite Element \
+Method\\\\Pg5\\\\code\\\\MG.txt\>\"", ",", "\"\<Table\>\""}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"list", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"list1", "[", 
+        RowBox[{"[", 
+         RowBox[{"i", ",", "1"}], "]"}], "]"}], ",", 
+       RowBox[{
+        RowBox[{"list1", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "2"}], "]"}], "]"}], "-", 
+        RowBox[{"list2", "[", 
+         RowBox[{"[", 
+          RowBox[{"i", ",", "2"}], "]"}], "]"}]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", 
+       RowBox[{"Length", "[", "list1", "]"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"img1", "=", 
+   RowBox[{"ListLinePlot", "[", 
+    RowBox[{"list1", ",", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"ColorData", "[", 
+       RowBox[{"3", ",", "\"\<ColorList\>\""}], "]"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"img2", "=", 
+   RowBox[{"ListLinePlot", "[", "list2", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"{", 
+  RowBox[{"img1", ",", "img2", ",", 
+   RowBox[{"Show", "[", 
+    RowBox[{"img1", ",", "img2", ",", 
+     RowBox[{"Range", "\[Rule]", "All"}]}], "]"}], ",", 
+   RowBox[{"ListLinePlot", "[", 
+    RowBox[{"list", ",", 
+     RowBox[{"PlotStyle", "\[Rule]", 
+      RowBox[{"ColorData", "[", 
+       RowBox[{"4", ",", "\"\<ColorList\>\""}], "]"}]}]}], "]"}]}], 
+  "}"}]}], "Input",
+ CellChangeTimes->{3.8485625501613913`*^9},
+ CellLabel->"In[13]:=",ExpressionUUID->"82c83c54-220c-41c9-ad72-84c3aa442dce"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   GraphicsBox[{{}, {{{}, {}, 
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+        LineBox[{{10., 0.0000124}, {20., 0.0000252}, {40., 0.0000399}, {80., 
+         0.0001504}, {160., 0.0005169}, {320., 0.0016391}, {640., 
+         0.0063815}, {928.7395307901237, 0.015915949999999998`}}]}}, 
+      {RGBColor[
+       0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+       PointSize[
+        NCache[
+         Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}, {
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}}, {{}, {}}},
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {0, 0.015915949999999998`}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.02], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}], ",", 
+   GraphicsBox[{{}, {{{}, {}, 
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+        LineBox[{{10., 0.000081}, {20., 0.0103963}, {40., 0.0295143}, {80., 
+         0.0584474}, {160., 0.154037}, {320., 0.331194}, {640., 0.676865}, {
+         1280., 1.64625}}]}}, 
+      {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+        NCache[
+         Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}, {
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}}, {{}, {}}},
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {0, 1.64625}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.02], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}], ",", 
+   GraphicsBox[{{{}, {{{}, {}, 
+        {RGBColor[
+         0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+         PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+         LineBox[{{10., 0.0000124}, {20., 0.0000252}, {40., 0.0000399}, {80., 
+          0.0001504}, {160., 0.0005169}, {320., 0.0016391}, {640., 
+          0.0063815}, {928.7395307901237, 0.015915949999999998`}}]}}, 
+       {RGBColor[
+        0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+        {RGBColor[
+         0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+         PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}, {
+        {RGBColor[
+         0.9058823529411765, 0.027450980392156862`, 0.12941176470588237`], 
+         PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}}, {{}, {}}}, {{}, {{{}, {}, 
+        {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+         LineBox[{{10., 0.000081}, {20., 0.0103963}, {40., 0.0295143}, {80., 
+          0.0584474}, {160., 0.154037}, {320., 0.331194}, {640., 0.676865}, {
+          1280., 1.64625}}]}}, 
+       {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+        {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}, {
+        {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+          NCache[
+           Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+         1.6]}, {}}}, {{}, {}}}},
+    Range -> All,
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {0, 0.015915949999999998`}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.02], 
+       Scaled[0.05]}},
+    Ticks->{Automatic, Automatic}], ",", 
+   GraphicsBox[{{}, {{{}, {}, 
+       {RGBColor[
+        0.3333333333333333, 0.38823529411764707`, 0.2901960784313726], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6], 
+        LineBox[{{10., -0.0000686}, {20., -0.010371100000000001`}, {
+         40., -0.0294744}, {80., -0.058296999999999995`}, {
+         160., -0.15352010000000002`}, {320., -0.3295549}, {
+         640., -0.6704835}, {1280., -1.6187351}}]}}, 
+      {RGBColor[0.3333333333333333, 0.38823529411764707`, 0.2901960784313726],
+        PointSize[
+        NCache[
+         Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[1.6]}, {
+       {RGBColor[
+        0.3333333333333333, 0.38823529411764707`, 0.2901960784313726], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}, {
+       {RGBColor[
+        0.3333333333333333, 0.38823529411764707`, 0.2901960784313726], 
+        PointSize[
+         NCache[
+          Rational[7, 360], 0.019444444444444445`]], AbsoluteThickness[
+        1.6]}, {}}}, {{}, {}}},
+    AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+    Axes->{True, True},
+    AxesLabel->{None, None},
+    AxesOrigin->{0, 0},
+    DisplayFunction->Identity,
+    Frame->{{False, False}, {False, False}},
+    FrameLabel->{{None, None}, {None, None}},
+    FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+    GridLines->{None, None},
+    GridLinesStyle->Directive[
+      GrayLevel[0.5, 0.4]],
+    Method->{
+     "OptimizePlotMarkers" -> True, 
+      "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+          (Identity[#]& )[
+           Part[#, 1]], 
+          (Identity[#]& )[
+           Part[#, 2]]}& )}},
+    PlotRange->{{0, 1280.}, {-1.6187351, 0}},
+    PlotRangeClipping->True,
+    PlotRangePadding->{{
+       Scaled[0.02], 
+       Scaled[0.02]}, {
+       Scaled[0.05], 
+       Scaled[0.02]}},
+    Ticks->{Automatic, Automatic}]}], "}"}]], "Output",
+ CellChangeTimes->{3.8485625523074074`*^9, 3.8485626086408024`*^9, 
+  3.848564036645519*^9},
+ CellLabel->"Out[18]=",ExpressionUUID->"8a3a4c75-74c3-4639-b5a3-7173c18218d8"]
+}, Open  ]]
+},
+WindowSize->{1028, 781},
+WindowMargins->{{Automatic, 42}, {Automatic, 30}},
+Magnification:>1.1 Inherited,
+FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (2019\:5e744\:67088\
+\:65e5)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 2106, 62, 256, "Input",ExpressionUUID->"b55b63bc-cf2a-44c5-9cb5-48ff5486788b"],
+Cell[2689, 86, 9576, 242, 156, "Output",ExpressionUUID->"ef8fdcc1-92a2-4f60-97d6-70b58fa35616"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12302, 333, 1979, 59, 256, "Input",ExpressionUUID->"82c83c54-220c-41c9-ad72-84c3aa442dce"],
+Cell[14284, 394, 9397, 239, 150, "Output",ExpressionUUID->"8a3a4c75-74c3-4639-b5a3-7173c18218d8"]
+}, Open  ]]
+}
+]
+*)
+
