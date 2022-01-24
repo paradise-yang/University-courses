@@ -1,0 +1,491 @@
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Template for homework of Introduction to Machine Learning.
+%
+%  Fill in your name, lecture number, lecture date and body
+%  of homework as indicated below.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt,letter,notitlepage]{article}
+%Mise en page
+\usepackage[left=2cm, right=2cm, lines=45, top=0.8in, bottom=0.7in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{fancybox}
+\usepackage{graphicx}
+\usepackage{pdfpages} 
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\headrulewidth}{1.5pt}
+\renewcommand{\footrulewidth}{1.5pt}
+\newcommand\Loadedframemethod{TikZ}
+\usepackage[framemethod=\Loadedframemethod]{mdframed}
+\usepackage{amssymb,amsmath}
+\usepackage{amsthm}
+\usepackage{thmtools}
+\setlength{\topmargin}{0pt}
+\setlength{\textheight}{9in}
+\setlength{\headheight}{0pt}
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\textwidth}{6in}
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% Define math operator %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator*{\argmin}{\bf argmin}
+\DeclareMathOperator*{\relint}{\bf relint\,}
+\DeclareMathOperator*{\dom}{\bf dom\,}
+\DeclareMathOperator*{\intp}{\bf int\,}
+%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\topmargin}{0pt}
+\setlength{\textheight}{9in}
+\setlength{\headheight}{0pt}
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\textwidth}{6in}
+\pagestyle{fancy}
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define the Exercise environment %%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\mdtheorem[
+topline=false,
+rightline=false,
+leftline=false,
+bottomline=false,
+leftmargin=-10,
+rightmargin=-10
+]{exercise}{\textbf{Exercise}}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% End of the Exercise environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% Define the Problem environment %%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\mdtheorem[
+topline=false,
+rightline=false,
+leftline=false,
+bottomline=false,
+leftmargin=-10,
+rightmargin=-10
+]{problem}{\textbf{Problem}}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% End of the Exercise environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Define the Solution Environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+\declaretheoremstyle
+[
+spaceabove=0pt, 
+spacebelow=0pt, 
+headfont=\normalfont\bfseries,
+notefont=\mdseries, 
+notebraces={(}{)}, 
+headpunct={:\quad}, 
+headindent={},
+postheadspace={ }, 
+postheadspace=4pt, 
+bodyfont=\normalfont, 
+qed=$\blacksquare$,
+preheadhook={\begin{mdframed}[style=myframedstyle]},
+postfoothook=\end{mdframed},
+]{mystyle}
+\declaretheorem[style=mystyle,title=Solution,numbered=no]{solution}
+\mdfdefinestyle{myframedstyle}{%
+	topline=false,
+	rightline=false,
+	leftline=false,
+	bottomline=false,
+	skipabove=-6ex,
+	leftmargin=-10,
+	rightmargin=-10}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% End of the Solution environment
+
+\renewcommand{\eqref}[1]{Eq.~(\ref{#1})}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+
+
+\newcommand{\proj}[2]{\textbf{P}_{#2} (#1)}
+\newcommand{\lspan}[1]{\textbf{span}  (#1)  }
+\newcommand{\rank}[1]{ \textbf{rank}  (#1)  }
+\newcommand{\tr}{ \operatorname{tr}  }
+\newcommand{\RNum}[1]{\uppercase\expandafter{\romannumeral #1\relax}}
+
+
+% Definition environment	
+\theoremstyle{definition}	
+\newtheorem{definition}{Definition}	
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%           Homework info.             %%
+\newcommand{\posted}{\text{Sep. 17, 2021}}       			%%% FILL IN POST DATE HERE
+\newcommand{\due}{\text{Sep. 29, 2021}} 			%%% FILL IN Due DATE HERE
+\newcommand{\hwno}{\text{1}} 		           			%%% FILL IN LECTURE NUMBER HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%    Put your information here   %%
+\newcommand{\name}{\text{San Zhang}}  	          			%%% FILL IN YOUR NAME HERE
+\newcommand{\id}{\text{PBXXXXXXXX}}		       			%%% FILL IN YOUR ID HERE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \lhead{
+% 	\textbf{\name}
+% }
+% \rhead{
+% 	\textbf{\id}
+% }
+\chead{\textbf{
+		Homework \hwno
+}}
+
+
+\begin{document}
+	\vspace*{-4\baselineskip}
+	\thispagestyle{empty}
+	
+	
+	\begin{center}
+		{\bf\large Introduction to Machine Learning}\\
+		{Fall 2021}\\
+		University of Science and Technology of China
+	\end{center}
+	
+	\noindent
+	Lecturer: Jie Wang  			 %%% FILL IN LECTURER HERE
+	\hfill
+	Homework \hwno             			
+	\\
+	Posted: \posted
+	\hfill
+	Due: \due
+%	Name: \name             			
+%	\hfill
+%	ID: \id						
+%	\hfill
+	
+	\noindent
+	\rule{\textwidth}{2pt}
+	
+	\medskip
+	
+	
+	
+	
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	%% BODY OF HOMEWORK GOES HERE
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\textbf{Notice, }to get the full credits, please present your solutions step by step.
+	
+	\begin{exercise}[Basis and coordinates]
+		Suppose that $\{\mathbf{a}_1, \mathbf{a}_2,\dots,\mathbf{a}_n\}$ is a basis of an $n$-dimensional vector space $V$. 
+		\begin{enumerate}
+			\item Show that $\{\lambda_1 \mathbf{a}_1, \lambda_2 \mathbf{a}_2, \dots, \lambda_n\mathbf{a}_n\}$ is also a basis of $V$ for  nonzero scalars $\lambda_1,\lambda_2, \dots, \lambda_n$. 
+			\item Let $V =\mathbb{R}^n$ and  $(\mathbf{b}_1,\mathbf{b}_2,\dots, \mathbf{b}_n) = (\mathbf{a}_1,\mathbf{a}_2, \dots, \mathbf{a}_n)\mathbf{P}$, where $\mathbf{P}\in \mathbb{R}^{n\times n}$ and $\mathbf{b}_i\in \mathbb{R}^n$, for any $i\in\{1,\dots,n\}$. Show that $\{ \mathbf{b}_1, \mathbf{b}_2, \dots, \mathbf{b}_n\}$ is also a basis of $V$ for any invertible  matrix $\mathbf{P}$.
+			\item Suppose that the coordinate of a vector $\mathbf{v}$ under the basis $\{\mathbf{a}_1,  \mathbf{a}_2,\dots,\mathbf{a}_n\}$ is $\mathbf{x}=(x_1,x_2,\dots x_n)$.
+			\begin{enumerate}
+				\item What is the coordinate of $\mathbf{v}$ under $\{\lambda_1 \mathbf{a}_1, \lambda_2 \mathbf{a}_2, \dots, \lambda_n\mathbf{a}_n\}$? 
+				
+				\item What are the coordinates of $\mathbf{w} = \mathbf{a}_1+\dots + \mathbf{a}_n$ under $\{\mathbf{a}_1, \mathbf{a}_2,\dots,\mathbf{a}_n\}$ and $\{\lambda_1 \mathbf{a}_1, \lambda_2 \mathbf{a}_2, \dots, \lambda_n\mathbf{a}_n\}$? Note that  $\lambda_i \neq 0$ for any $i\in \{1,\dots,n\}$.
+			\end{enumerate}
+		\end{enumerate}
+	\end{exercise}
+	\begin{solution}
+		
+	\end{solution}
+	
+	
+	\newpage
+	
+	\begin{exercise}[Derivatives with matrices] 
+	
+	\begin{definition}[Differentiability]\cite{Tao}\label{def:diff}
+	    Let $f:\mathbb{R}^n\rightarrow\mathbb{R}^m$ be a function, $\mathbf{x}_0\in\mathbb{R}^n$ be a point, and let $L:\mathbb{R}^n\rightarrow\mathbb{R}^m$ be a linear transformation. We say that $f$ is \emph{differentiable at $\mathbf{x}_0$ with derivative $L$} if we have
+	    \begin{align*}
+	        \lim_{\mathbf{x}\rightarrow\mathbf{x}_0;\mathbf{x}\neq\mathbf{x}_0}\frac{\|f(\mathbf{x})-f(\mathbf{x}_0)-L(\mathbf{x}-\mathbf{x}_0)\|_2}{\|\mathbf{x}-\mathbf{x}_0\|_2}=0.
+	    \end{align*}
+	    We denote this derivative by $f'(\mathbf{x}_0)$.
+	\end{definition}
+	
+% 		Let $\textbf{X} \in \mathbb{R}^{p\times q}$, the derivative of a scalar function with respect to the matrix $\mathbf{X}$ is given by 
+% 		$$
+% 		\frac{\partial f(\mathbf{X})}{\partial \mathbf{X}}=\left[\begin{array}{cccc}
+% 			\frac{\partial f}{\partial x_{11}} & \frac{\partial f}{\partial x_{21}} & \cdots & \frac{\partial f}{\partial x_{p 1}} \\
+% 			\frac{\partial f}{\partial x_{12}} & \frac{\partial f}{\partial x_{22}} & \cdots & \frac{\partial f}{\partial x_{p 2}} \\
+% 			\vdots & \vdots & \ddots & \vdots \\
+% 			\frac{\partial f}{\partial x_{1 q}} & \frac{\partial f}{\partial x_{2 q}} & \cdots & \frac{\partial f}{\partial x_{p q}}
+% 		\end{array}\right]
+% 		$$
+		\begin{enumerate}
+			\item 	Let $\mathbf{x},\mathbf{a}\in \mathbb{R}^n$ and $\mathbf{y}\in \mathbb{R}^m$. Consider the functions as follows. Please show that they are differentiable and find $f'(\mathbf{x})$.
+			\begin{enumerate}
+				\item[(a)] $f(\mathbf{x}) = \mathbf{a}^{\top}\mathbf{x}$.
+				\item[(b)] $f(\mathbf{x}) = \mathbf{x}^{\top}\mathbf{x}$.
+				\item[(c)] $f(\mathbf{x})=\| \mathbf{y} - \mathbf{A}\mathbf{x} \|_2^2$, where $\mathbf{A}\in\mathbb{R}^{m\times n}$.
+			\end{enumerate}
+			\item Please follow Definition \ref{def:diff} and give the definition of the differentiability of the functions $f:\mathbb{R}^{n\times n}\rightarrow\mathbb{R}$.
+			\item Let $f(\mathbf{X}) = \det(\mathbf{X})$, where $\det(\mathbf{X})$ is the determinant of $\mathbf{X} \in \mathbb{R}^{n \times n}$. Please discuss the differentiability of $f$ rigorously according to your definition in the last part. If $f$ is differentiable, please find $f'(\mathbf{X})$. 
+			\item Let $f(\mathbf{X})=\tr(\mathbf{A}^{\top}\mathbf{X})$, where $\mathbf{A},\mathbf{X}\in\mathbb{R}^{n\times m}$, and $\tr(\cdot)$ denotes the trace of a matrix. Please discuss the differentiability of $f$ and find $f'$ if it is differentiable.
+			\item Let $\mathbf{S}_{++}^n$ be the space of all positive definite $n\times n$ matrices. Prove the function $f: \mathbf{S}_{++}^{n} \rightarrow \mathbb{R}$ defined by $f(\mathbf{X})=\tr{\mathbf{X}^{-1}}$ is differentiable on $ \mathbf{S}_{++}^{n} $. (Hint: Expand the expression $(\mathbf{X}+t\mathbf{Y})^{-1}$ as a power series.)
+            \item Define a function $ f: \mathbf{S}_{++}^{n}\to\mathbb{R} $ by $f(\mathbf{X})=\log\det{\mathbf{X}}$. Prove $\nabla{f(\mathbf{I})=\mathbf{I}}$. Deduce $\nabla{f(\mathbf{X})=\mathbf{X}^{-1}}$ for any $\mathbf{X}$ in $\mathbf{S}^n_{++}$.
+		\end{enumerate}
+		
+	\end{exercise}
+	
+	\begin{solution}
+		
+	\end{solution}
+	
+	\newpage
+	\begin{exercise}[Rank of matrices ]
+		Let $\mathbf{A} \in \mathbb{R}^{m\times n}$ and $\mathbf{B}\in \mathbb{R}^{n\times p}$.
+		\begin{enumerate}
+			\item Please show that
+			\begin{enumerate}
+				\item $\rank{\mathbf{A}} = \rank{\mathbf{A}^{\top}}$;
+				\item $\rank{\mathbf{A}\mathbf{B}} \leq \rank{\mathbf{A}}$;
+				\item $\rank{\mathbf{A}\mathbf{B}} \leq \rank{\mathbf{B}}$;
+				\item $\rank{\mathbf{A}} = \rank{\mathbf{A}^{\top}  \mathbf{A}}$.
+			\end{enumerate}
+			\item The \emph{column space} of $\mathbf{A}$ is defined by
+			\begin{align*}
+				\mathcal{C}(\mathbf{A} ) = \{ \mathbf{y}\in \mathbb{R}^m : \mathbf{y} = \mathbf{Ax},\,\mathbf{x}\in\mathbb{R}^n\}.
+			\end{align*}
+			The \emph{null space} of $\mathbf{A}$ is defined by
+			\begin{align*}
+				\mathcal{N}(\mathbf{A})  = \{ \mathbf{x}\in \mathbb{R}^n : \mathbf{Ax}=0\}.
+			\end{align*}
+			Notice that, the rank of $\mathbf{A}$ is the dimension of the column space of $\mathbf{A}$.
+			
+			Please show that
+			\begin{enumerate}
+				\item $\rank{\mathbf{A}} + \dim ( \mathcal{N}( \mathbf{A} ) ) = n$;
+				\item $\mathbf{y}=\mathbf{0}$ if and only if $\mathbf{a}_i^{\top}\mathbf{y}=0$ for $i=1,\ldots,m$, where $\mathbf{y}\in \mathbb{R}^m$ and  $\{\mathbf{a}_1,\mathbf{a}_2,\ldots,\mathbf{a}_m\}$ is a basis of $\mathbb{R}^m$.
+			\end{enumerate}    
+			\item Show that
+			\begin{align}\label{eqn:rankaba}
+				\rank{\mathbf{AB}}=\rank{\mathbf{B}}-\dim(\mathcal{C}(\mathbf{B})\cap \mathcal{N}(\mathbf{A})).
+			\end{align}
+			\item Suppose that the first term on the right-hand side (RHS) of \eqref{eqn:rankaba} changes to $\rank{\mathbf{A}}$. Please find the second term on the RHS of \eqref{eqn:rankaba} such that it still holds.
+			\item Show the results in 1. by \eqref{eqn:rankaba} or the one you established in 4.
+		\end{enumerate}
+	\end{exercise}
+	
+	\begin{solution}
+		
+	\end{solution}
+	
+	\newpage
+	
+	\begin{exercise}[Linear equations]
+		
+		Consider the system of linear equations in $\mathbf{w}$
+		\begin{align}\label{eq1}
+			\mathbf{y} = \mathbf{X} \mathbf{w} ,    
+		\end{align}
+		where $\mathbf{y} \in \mathbb{R}^{n}$, $\mathbf{w} \in \mathbb{R}^{d}$, and $\mathbf{X} \in \mathbb{R}^{n \times d}$.
+		
+		\begin{enumerate}
+			\item Give an example for ``$\mathbf{X}$'' and ``$\mathbf{y}$'' to satisfy the following three situations respectively:
+			\begin{enumerate}
+				\item there exists one unique solution;
+				\item there does not exist any solution;
+				\item there exists more than one solution.
+			\end{enumerate}
+			\item Suppose that $\mathbf{X}$ has full column rank and $\rank{(\mathbf{X}, \mathbf{y})} = \rank{\mathbf{X}}$. Show that the system of linear equations (\ref{eq1}) always admits a unique solution.
+			
+			\item (\textbf{Normal equations}) Consider  another system of linear equations in $\mathbf{w}$
+			\begin{align}\label{eq_normal}
+				\mathbf{X}^{\top}\mathbf{y} = \mathbf{X}^{\top}\mathbf{X}\mathbf{w}. 
+			\end{align}
+			Please show that the system (\ref{eq_normal}) always admits a solution. Moreover, does it always admit a unique solution?
+		\end{enumerate}
+		
+	\end{exercise}
+	
+	\begin{solution}
+		
+	\end{solution}
+	
+	\newpage
+	
+	\begin{exercise}[Linear regression ]
+		Consider a data set $\{ (x_i ,y_i) \}_{i=1}^{n}$, where $x_i,y_i\in \mathbb{R}$. 
+		\begin{enumerate}
+			\item If we want to fit the data by a linear model
+			\begin{align}\label{eqn:linear}
+				y =  w_0 + w_1 x,
+			\end{align}
+			please find $\hat{w}_0$ and $\hat{w}_1$ by the least squares approach (you need to find expressions of $\hat{w}_0$ and $\hat{w}_1$ by $\{ (x_i ,y_i) \}_{i=1}^{n}$, respectively).
+			\item \textbf{Programming Exercise} We provide you a data set $\{ (x_i ,y_i) \}_{i=1}^{30}$. Consider the model in (\ref{eqn:linear}) and the one as follows:
+			\begin{align}\label{eqn:linear-quadratic}
+				y =  w_0 + w_1 x+ w_2 x^2. 
+			\end{align}
+			Which model do you think fits better the data? Please detail your approach first and then implement it by your favorite programming language. The required output includes 
+			\begin{enumerate}
+				\item your detailed approach step by step; 
+				\item your code with detailed comments according to your planned approach; 
+				\item a plot showing the data and the fitting models; 
+				\item the model you finally choose [$\hat{w}_0$ and $\hat{w}_1$ if you choose the model in (\ref{eqn:linear}), or $\hat{w}_0$, $\hat{w}_1$, and $\hat{w}_2$ if you choose the model in (\ref{eqn:linear-quadratic})].
+			\end{enumerate}
+		\end{enumerate}
+		
+	\end{exercise}
+	
+	\begin{solution}
+		
+	\end{solution}
+	\newpage
+	
+	
+	
+	
+	\begin{exercise}[Projection ]
+		Let $\mathbf{A}\in\mathbb{R}^{m\times n}$ and $\mathbf{x} \in \mathbb{R}^m$. Define
+		\begin{align*}
+			\proj{\mathbf{x}}{\mathbf{A}} = \argmin_{\mathbf{z}\in\mathbb{R}^m}\,\{\|\mathbf{x}-\mathbf{z}\|_2: \mathbf{z}\in\mathcal{C}(\mathbf{A})\}.   
+		\end{align*}
+		We call $\proj{\mathbf{x}}{\mathbf{A}}$ the projection of the point $\mathbf{x}$ onto the column space of $\mathbf{A}$. 
+		\begin{enumerate}
+			\item Please prove that $\mathbf{P}_{\mathbf{A}}(\mathbf{x})$ is unique for any $\mathbf{x} \in \mathbb{R}^m$. 
+			\item Let $\mathbf{v}_i \in \mathbb{R}^n$, $i=1,\ldots,d$ with $d\leq n$, which are linearly independent.
+			\begin{enumerate}
+				\item For any $\mathbf{w}\in \mathbb{R}^n$, please find $\proj{\mathbf{w}}{\mathbf{v}_1}$, which is the projection of $\mathbf{w}$ onto the subspace spanned by $\mathbf{v}_1$.  
+				\item Please show $\proj{\cdot}{\mathbf{v}_1}$ is a linear map, i.e.,
+				\begin{align*}
+					\proj{\alpha\mathbf{u}+\beta\mathbf{w}}{\mathbf{v}_1}=\alpha\proj{\mathbf{u}}{\mathbf{v}_1} + \beta \proj{\mathbf{w}}{\mathbf{v}_1},
+				\end{align*}
+				where $\alpha,\beta\in\mathbb{R}$ and $\mathbf{w}\in\mathbb{R}^n$.
+				\item Please find the projection matrix corresponding to the linear map $\proj{\cdot}{\mathbf{v}_1}$, i.e., find the matrix $\mathbf{H}_1\in\mathbb{R}^{n\times n}$ such that
+				\begin{align*}
+					\proj{\mathbf{w}}{\mathbf{v}_1}=\mathbf{H}_1\mathbf{w}.
+				\end{align*}
+				\item Let $\mathbf{V}=(\mathbf{v}_1,\ldots,\mathbf{v}_d)$. 
+				\begin{enumerate}
+					\item For any $\mathbf{w}\in \mathbb{R}^n$, please find $\proj{\mathbf{w}}{\mathbf{V}}$ and the corresponding projection matrix $\mathbf{H}$.
+					\item Please find $\mathbf{H}$ if we further assume that $\mathbf{v}_i^{\top}\mathbf{v}_j=0$, $\forall\,i\neq j$.
+				\end{enumerate}
+			\end{enumerate}
+			
+			\item  
+			\begin{enumerate}
+				\item Suppose that 
+				\begin{align*}
+					\mathbf{A} = \left[
+					\begin{matrix}
+						1 & 0\\
+						0 & 1
+					\end{matrix}
+					\right] .
+				\end{align*}
+				What are the coordinates of $\mathbf{P}_{\mathbf{A}}(\mathbf{x})$ with respect to the column vectors in $\mathbf{A}$ for any $\mathbf{x} \in \mathbb{R}^2$? Are the coordinates unique?
+				\item Suppose that
+				\begin{align*}
+					\mathbf{A} = \left[
+					\begin{matrix}
+						1 & 2\\
+						1 & 2
+					\end{matrix}
+					\right] .
+				\end{align*}
+				What are the coordinates of $\mathbf{P}_{\mathbf{A}}(\mathbf{x})$ with respect to the column vectors in $\mathbf{A}$ for any $\mathbf{x} \in \mathbb{R}^2$? Are the coordinates unique?
+			\end{enumerate}
+			
+			\item A matrix $\mathbf{P}$ is called a projection matrix if $\mathbf{P}\mathbf{x}$ is the projection of $\mathbf{x}$ onto $\mathcal{C}(\mathbf{P})$ for any $\mathbf{x}$.
+			\begin{enumerate}
+				\item Let $\lambda$ be the eigenvalue of $\mathbf{P}$. Show that $\lambda$ is either $1$ or $0$. (\emph{Hint: you may want to figure out what the eigenspaces corresponding to $\lambda=1$ and $\lambda=0$ are, respectively.})
+				\item Show that $\mathbf{P}$ is a projection matrix if and only if $\mathbf{P}^2 = \mathbf{P}$ and $\mathbf{P}$ is symmetric.
+			\end{enumerate}
+			
+			\item Let $\mathbf{B} \in \mathbb{R}^{m\times s}$ and $\mathcal{C}(\mathbf{B}) $ be its column space. Suppose that $\mathcal{C}(\mathbf{B})$ is a proper subspace of $ \mathcal{C}(\mathbf{A})$. 
+			Is $\proj{\mathbf{x}}{\mathbf{B}}$ the same as $\proj{\proj{\mathbf{x}}{\mathbf{A}}}{\mathbf{B}}$? Please show your claim rigorously.
+		\end{enumerate}
+	\end{exercise}
+	
+	\begin{solution}
+		
+	\end{solution}
+
+	
+	
+	\newpage
+	
+	
+	
+	\begin{exercise}[Linear regression by maximum likelihood]\label{Exe5}
+		Suppose that the samples $\{(\mathbf{x}_i,y_i)\}^n_{i=1}$ are i.i.d., where $\mathbf{x}_i =(x_{i,1}, \dots, x_{i,d})^{\top} \in \mathbb{R}^d$  and $y_i \in \mathbb{R}$. For any $i\in \{1,\dots, n\}$, we assume that 
+		$$y_i =  w_0 + w_1 x_{i,1} +\dots + w_d x_{i,d} + \epsilon_i,$$
+		where $\mathbf{w} = (w_0,w_1,\dots,w_d)^{\top}\in \mathbb{R}^{d+1}$ and $\epsilon_i\sim \mathcal{N}(0,\sigma^2)$. For simplicity, we define $\bar{\mathbf{x}}_i = (1, x_{i,1}, \dots, x_{i,d})^\top$, $ \mathbf{X}=(\bar{\mathbf{x}}_1,\dots,\bar{\mathbf{x}}_n)^\top$, and $\mathbf{y}=(y_1,\dots,y_n)^\top$, where $\mathbf{X}$ has full rank.
+		\begin{enumerate}
+			\item Please find the maximum likelihood estimation (MLE) $\hat{\mathbf{w}}$ of the weights $\mathbf{w}$. Specifically, please give the expression of $\hat{w}_0$.
+			\item Please find the MLE of $\sigma$.
+		\end{enumerate}
+	\end{exercise}
+	\begin{solution}
+		
+	\end{solution}
+	
+\newpage
+\begin{exercise}[Multicollinearity]
+	Consider the linear regression problem formulated as below:
+	$$\mathbf{y} = \mathbf{X} \mathbf{ w + e}, \mathbb{E}(\mathbf{e}) = \mathbf{0}, \operatorname{Cov}(\mathbf{e}) = \sigma^2 \mathbf{I_n}, $$where $\mathbf{y}=\left(y_{1}, \ldots, y_{n}\right)^{\top}$ and $\mathbf{X} \in \mathbb{R}^{n \times p}$. Suppose that $\mathbf{X}^{\top}\mathbf{X}$ is invertible, then $\hat{\mathbf{w}} = \left(\mathbf{X}^{\top} \mathbf{X}\right)^{-1} \mathbf{X}^{\top} \mathbf{y}$ is the least squares estimator of $\mathbf{w}$.
+	\begin{enumerate}
+		\item Recall that the covariance matrix of p-dimensional random vectors is defined as $$\operatorname{Cov}(\hat{\mathbf{w}}) = \mathbb{E}\mathbf{[(\hat{\mathbf{w}}-\mathbb{E}(\hat{\mathbf{w}}))(\hat{\mathbf{w}}-\mathbb{E}(\hat{\mathbf{w}}))^{\top}]}.$$
+		Please show that
+		\begin{enumerate}
+			\item[(a)] $\mathbb{E}(\hat{\mathbf{w}}) = \mathbf{w}$;
+			\item[(b)] $\operatorname{Cov}(\hat{\mathbf{w}}) = \sigma^2 \left(\mathbf{X}^{\top} \mathbf{X}\right)^{-1}$.
+		\end{enumerate}
+		\item We usually measure the quality of an estimator by mean squared error (MSE). The mean squared error (MSE) of estimator $\hat{\mathbf{w}}$ is defined as 	$$\text{MSE}(\hat{\mathbf{w}}) = \mathbb{E}[\left\|\hat{\mathbf{w}} - \mathbf{w}\right
+		\|^2] .$$ Please derive that MSE can be decomposed into the variance of the estimator and the squared bias of the estimator, i.e.,
+			$$\begin{aligned}
+			\text{MSE}(\hat{\mathbf{w}}) &= \operatorname{trCov}(\hat{\mathbf{w}}) + \left\|\mathbb{E}\hat{\mathbf{w}}-\mathbf{w}\right\|^2\\
+			&=\sum_{i=1}^{p} \operatorname{Var}(\hat{w_i}) + \sum_{i=1}^{p}  (\mathbb{E} \hat{w_i}-w_i)^2.
+		\end{aligned}$$ 
+		\item Please show that
+		$$\text{MSE}(\hat{\mathbf{w}}) = \sigma^2 \sum_{i=1}^{p} \frac{1}{\lambda_i},$$ 
+		
+		where $\lambda_1,\lambda_2,\ldots,\lambda_{p}$ are the eigenvalues of $\mathbf{X}^{\top} \mathbf{X}$.
+		\item What would happen if there exists an eigenvalue $\lambda_k \approx 0$?
+	\end{enumerate}
+\end{exercise}
+	\begin{solution}
+		
+	\end{solution}
+
+	\newpage
+	
+	
+	
+	
+	
+	\begin{exercise}[Regularized least squares]
+		Suppose that $\mathbf{X}\in \mathbb{R}^{n\times d}$.
+		\begin{enumerate}
+			\item Please show that $\mathbf{X}^{\top}\mathbf{X}$ is always positive semi-definite. Moreover, $\mathbf{X}^{\top}\mathbf{X}$ is positive definite if and only if $\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_d$ are linearly independent.
+			\item Please show that $\mathbf{X}^{\top}\mathbf{X} + \lambda \mathbf{I}$ is always invertible, where $\lambda>0$ and $\mathbf{I}\in \mathbb{R}^{d\times d}$ is an identity matrix.  
+			\item Consider the regularized least squares linear regression and denote
+			$$
+			\mathbf{w}^*(\lambda)=\argmin_\mathbf{w} L(\mathbf{w})+\lambda \Omega(\mathbf{w}),
+			$$
+			where $L(\mathbf{w})=\frac{1}{n}\|\mathbf{y}-\mathbf{Xw}\|_2^2$ and $\Omega(\mathbf{w})=\|\mathbf{w}\|_2^2$. For regular parameters $0<\lambda_1<\lambda_2$, please show that $L(\mathbf{w}^*(\lambda_1)) < L(\mathbf{w}^*(\lambda_2))$ and $\Omega (\mathbf{w}^*(\lambda_1)) > \Omega (\mathbf{w}^*(\lambda_2))$. Explain intuitively why this holds.
+		\end{enumerate}
+		
+		
+	\end{exercise}
+	
+	\begin{solution}
+		
+	\end{solution}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\newpage
+	\newpage
+    \bibliography{refs}
+    \bibliographystyle{abbrv}
+	
+\end{document}
